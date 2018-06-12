@@ -236,7 +236,7 @@ class Room extends React.Component {
                 {/* <div className="is-divider" /> */}
                 <article className="tile is-child notification">
                   <div id="yelp-list">
-                    <p className="title">Local Resturants</p>
+                    <p className="title">Local Restaurants</p>
                     {restaurantList}
                   </div>
                 </article>
@@ -245,7 +245,7 @@ class Room extends React.Component {
             <div className="column">
               <div className="tile is-parent is-vertical">
                 <article className="tile is-child notification">
-                  <div id="current-resturant">
+                  <div id="current-restaurant">
                     <p className="title">Current Selection</p>
                     {currentSelection}
                     <button onClick={this.voteApprove} className="button is-success">
@@ -258,7 +258,7 @@ class Room extends React.Component {
                       <h3>Scoreboard</h3>
                       <table className="table is-striped is-bordered is-fullwidth">
                         <thead>
-                          <th>Resturant</th>
+                          <th>Restaurant</th>
                           <th>Votes</th>
                         </thead>
                         <tbody>

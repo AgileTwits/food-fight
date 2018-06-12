@@ -1,10 +1,10 @@
 import React from 'react';
 
 const CurrentSelection = props => (
-  <article className="media Resturant-list-item">
+  <article className="media Restaurant-list-item">
     <figure className="media-left">
       <p className="image is-64x64">
-        <img src={props.restaurant.image_url} className="resturant-img hidden" />
+        <img src={props.restaurant.image_url} className="restaurant-img hidden" />
       </p>
     </figure>
     <div className="media-content">

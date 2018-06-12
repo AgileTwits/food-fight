@@ -12,10 +12,10 @@ class RestaurantListItem extends React.Component {
 
   render() {
     return (
-      <article className="media Resturant-list-item" onClick={this.handleClick}>
+      <article className="media Restaurant-list-item" onClick={this.handleClick}>
         <figure className="media-left">
           <p className="image is-64x64">
-            <img src={this.props.restaurant.image_url} className="resturant-img hidden" />
+            <img src={this.props.restaurant.image_url} className="restaurant-img hidden" />
           </p>
         </figure>
         <div className="media-content">

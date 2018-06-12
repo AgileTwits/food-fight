@@ -1,6 +1,6 @@
 # Food Fight!
 
-App to vote over what local resturant to eat at with your friends or coworkers. Allows users to nominate where to eat and others can either vote to approve or veto it and suggest somewhere else to eat.
+App to vote over what local restaurant to eat at with your friends or coworkers. Allows users to nominate where to eat and others can either vote to approve or veto it and suggest somewhere else to eat.
 
 ### Installing
 

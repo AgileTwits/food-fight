@@ -201,7 +201,7 @@ app.post('/api/search', (req, res) => {
     method: 'GET',
     uri: 'https://api.yelp.com/v3/businesses/search',
     headers: {
-      Authorization: process.env.YELP_API_KEY,
+      Authorization: `Bearer ${process.env.YELP_API_KEY}`,
     },
     qs: {
       location: zip,

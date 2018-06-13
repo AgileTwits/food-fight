@@ -1,10 +1,15 @@
-@import 'colors';
+// @import 'colors';
 @import 'helpers';
 @import url("https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
 @import url('https://fonts.googleapis.com/css?family=Kalam:700');
 // Import the initial variables
-@import "../../../node_modules/bulma/sass/utilities/initial-variables";
-@import "../../../node_modules/bulma/sass/utilities/functions";
+
+// @import "../../../node_modules/bulma/sass/utilities/initial-variables";
+// @import "../../../node_modules/bulma/sass/utilities/functions";
+@import "../../../node_modules/bulmaswatch/journal/_variables.scss";
+@import "../../../node_modules/bulma/bulma";
+@import "../../../node_modules/bulmaswatch/journal/_overrides.scss";
+
 
 // .create-room-container {
 //     margin-top: 25px;
@@ -108,7 +113,7 @@ div.columns {
 }
 
 .create-room-container {
-  background-color: $grey;
+  // background-color: $grey;
 }
 
 .google-button-container {
@@ -319,5 +324,3 @@ $font-size: 25px;
   }
   input {}
 }
-
-@import "../../../node_modules/bulma/bulma";

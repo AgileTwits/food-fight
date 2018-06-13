@@ -2,11 +2,15 @@
 @import 'helpers';
 @import url("https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
 @import url('https://fonts.googleapis.com/css?family=Kalam:700');
+// Import the initial variables
+@import "../../../node_modules/bulma/sass/utilities/initial-variables";
+@import "../../../node_modules/bulma/sass/utilities/functions";
+
 // .create-room-container {
 //     margin-top: 25px;
 //     margin-left: 10px;
 //     padding: 20px;
-//     background-color: $grey;
+//     background-color: $grey; 
 // }
 article {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
@@ -315,3 +319,5 @@ $font-size: 25px;
   }
   input {}
 }
+
+@import "../../../node_modules/bulma/bulma";

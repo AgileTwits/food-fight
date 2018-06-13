@@ -9,7 +9,6 @@ import MainView from './components/MainView.jsx'
 import SignupPage from './components/AuthUserMenu/SignupPage.jsx';
 import Room from './components/Room.jsx';
 
-import 'bulma/css/bulma.css';
 import 'animate.css/animate.css';
 import './styles/main.scss';
 

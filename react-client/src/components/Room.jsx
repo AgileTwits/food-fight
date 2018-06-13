@@ -71,6 +71,7 @@ class Room extends React.Component {
   componentDidMount() {
     this.getMessages();
     this.getRoomInfo();
+    this.getTimer();
     this.getVotes();
     this.socket.emit('join', this.roomID);
     this.setState({
@@ -93,6 +94,12 @@ class Room extends React.Component {
         zipcode: roomMembers[0].rooms[0].zipcode,
         roomName: roomMembers[0].rooms[0].name,
       });
+    });
+  }
+
+  getTimer() {
+    $.get(`/api/timer/${this.roomID}`).then(timer => {
+      console.log('TIMER: ', timer);
     });
   }
 

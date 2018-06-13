@@ -8,6 +8,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true,
     },
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      primaryKey: true,
+    },
   });
 
   Message.associate = (models) => {

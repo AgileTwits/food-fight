@@ -12,6 +12,18 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER(6),
       allowNull: false,
     },
+    winningUser: {
+      type: DataTypes.INTEGER(6),
+      allowNull: true,
+    },
+    currentRestaurant: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    winningRestaurant: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    }
   });
 
   Room.associate = (models) => {

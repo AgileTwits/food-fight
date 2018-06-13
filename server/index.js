@@ -10,6 +10,8 @@ const flash = require('flash');
 const auth = require('../lib/auth');
 const morgan = require('morgan');
 const socket = require('socket.io');
+const uniqueString = require('unique-string');
+const tock = require('tocktimer');
 
 const Mailjet = require('node-mailjet').connect(
   process.env.MAILJET_API_KEY,
@@ -165,7 +167,13 @@ app.post('/api/roomEmail', (req, res) => {
 app.post('/api/save', (req, res) => {
   // console.log('NEW ROOM DATA', req.body);
   const { roomName, zip, members } = req.body;
-  dbHelpers.saveRoomAndMembers(roomName, zip, members, (err, room, users) => {
+  let roomUnique = uniqueString();
+  timerObj[roomUnique] = new tock({
+    countdown: true,
+  });
+  timerObj[roomUnique].start(300000);
+
+  dbHelpers.saveRoomAndMembers(roomName, zip, members, roomUnique, (err, room, users) => {
     if (err) {
       console.log('Error saving room and members', err);
     } else {
@@ -183,6 +191,11 @@ app.get('/api/rooms/:roomID', (req, res) => {
       res.send(roomMembers);
     }
   });
+});
+
+app.get('/api/timer/:roomID', (req, res) => {
+  const { roomID } = req.params;
+  res.send({timeLeft: timerObj[roomID].lap()});
 });
 
 app.post('/room-redirect', (req, res) => {
@@ -337,3 +350,5 @@ db.models.sequelize.sync().then(() => {
 
   });
 });
+
+let timerObj = {};

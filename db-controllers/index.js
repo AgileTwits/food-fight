@@ -24,7 +24,7 @@ const saveMember = (email, password, zipcode, callback) => {
     });
 };
 
-const saveRoomAndMembers = (roomName, zip, members, callback) => {
+const saveRoomAndMembers = (roomName, zip, members, id, callback) => {
   const promisedMembers = members.map(memberEmail => db.models.User.findOne({
     where: {
       email: memberEmail,
@@ -34,7 +34,7 @@ const saveRoomAndMembers = (roomName, zip, members, callback) => {
   db.models.Room.findOrCreate({
     where: {
       name: roomName,
-      uniqueid: uniqueString(),
+      uniqueid: id,
       zipcode: zip,
     },
   })

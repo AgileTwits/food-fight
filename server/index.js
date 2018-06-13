@@ -171,7 +171,7 @@ app.post('/api/save', (req, res) => {
   timerObj[roomUnique] = new tock({
     countdown: true,
   });
-  timerObj[roomUnique].start(25000);
+  timerObj[roomUnique].start(300000);
 
   dbHelpers.saveRoomAndMembers(roomName, zip, members, roomUnique, (err, room, users) => {
     if (err) {

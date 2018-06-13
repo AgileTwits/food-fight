@@ -14,7 +14,7 @@ class RestaurantListItem extends React.Component {
     return (
       <article className="media Restaurant-list-item" onClick={this.handleClick}>
         <figure className="media-left">
-          <p className="image is-64x64">
+          <p className="image is-square is-128x128">
             <img src={this.props.restaurant.image_url} className="restaurant-img hidden" />
           </p>
         </figure>

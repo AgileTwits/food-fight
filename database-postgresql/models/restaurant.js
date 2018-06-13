@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: false,
     },
+    nominator: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   });
 
   Restaurant.associate = (models) => {

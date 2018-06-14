@@ -210,12 +210,6 @@ const updateVotes = (voter, restaurant_id, name, roomId, callback) => {
       callback(error);
     });
 
-    //Joseph using SQL to update votes table
-    let strippedName = name.replace("'", '`');
-    let sqlQuery = `INSERT INTO votes (restaurant_id, roomuniqueid, useremail, name, upvoted, created, updated) VALUES ('${restaurant_id}', '${roomId}', '${voter}', '${strippedName}', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);`
-    db.sequelize.query(sqlQuery).spread((results) => {
-      console.log('VOTE', results[0]);
-    });
   // Joseph using SQL to update votes table
   const strippedName = name.replace("'", '`');
   const sqlQuery = `INSERT INTO votes (restaurant_id, roomuniqueid, useremail, name, upvoted, created, updated) VALUES ('${restaurant_id}', '${roomId}', '${voter}', '${strippedName}', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);`;

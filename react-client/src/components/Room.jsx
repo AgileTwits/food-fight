@@ -88,6 +88,7 @@ class Room extends React.Component {
 
   getRoomInfo() {
     $.get(`/api/rooms/${this.roomID}`).then(roomMembers => {
+      console.log(`Got roommembers: ${JSON.stringify(roomMembers)} from ${this.roomID}`)
       this.setState({
         members: roomMembers,
         zipcode: roomMembers[0].rooms[0].zipcode,

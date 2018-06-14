@@ -178,6 +178,7 @@ app.post('/api/save', (req, res) => {
     if (err) {
       console.log('Error saving room and members', err);
     } else {
+      console.log(`Saved room: ${roomName}`);
       res.send(room[0].dataValues);
     }
   });
@@ -189,6 +190,7 @@ app.get('/api/rooms/:roomID', (req, res) => {
     if (err) {
       console.log('Error getting room members', err);
     } else {
+      console.log(`Got for ${roomID} roommembers: ${JSON.stringify(roomMembers)}`)
       res.send(roomMembers);
     }
   });

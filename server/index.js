@@ -170,6 +170,7 @@ app.post('/api/save', (req, res) => {
   let roomUnique = uniqueString();
   timerObj[roomUnique] = new tock({
     countdown: true,
+    complete: dbHelpers.saveWinner(roomUnique)
   });
   timerObj[roomUnique].start(300000);
 

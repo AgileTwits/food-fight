@@ -1,6 +1,7 @@
 const db = require('../database-postgresql/models');
 const bcrypt = require('bcrypt');
 const uniqueString = require('unique-string');
+const sequelize = require('sequelize');
 
 // db.sequelize.query('SELECT * FROM users').spread((results) => {
 //   console.log('AAAAAAAAAAAAAAA', results[0]);
@@ -271,6 +272,31 @@ const getScoreboard = (roomID, callback) => {
   })
 };
 
+const saveWinner = (roomId, callback) => {
+  db.models.Vote
+    .findAll({
+      where: {roomuniqueid: roomId},
+      attributes: ['restaurant_id',
+        [sequelize.fn('count', sequelize.col('upvoted')), 'votes']],
+      group: ['restaurant_id'],
+      order: [['count', 'DESC']]
+    })
+    .then((res) => {
+      let restId = res[0].dataValues.restaurant_id;
+      db.models.Room
+        .update({
+          winningRestaurant: restId
+        }, {
+          where: {uniqueid: roomId},
+          returning: true,
+          plain: true
+        })
+    })
+    .then((num, room) => {
+      
+    });
+}
+
 module.exports = {
   saveMember,
   saveRoomAndMembers,
@@ -282,4 +308,5 @@ module.exports = {
   saveMessage,
   getMessages,
   getRooms,
+  saveWinner
 };

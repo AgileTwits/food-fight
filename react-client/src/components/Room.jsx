@@ -1,6 +1,7 @@
 import React from 'react';
 import io from 'socket.io-client';
 import $ from 'jquery';
+import Tock from 'tocktimer';
 import RestaurantList from './RestaurantList.jsx';
 import CurrentSelection from './CurrentSelection.jsx';
 
@@ -18,6 +19,7 @@ class Room extends React.Component {
       isNominating: true,
       votes: [],
       roomName: '',
+      timer: '',
       // The hasVoted functionality has not yet been implemented
       hasVoted: false,
     };
@@ -99,7 +101,22 @@ class Room extends React.Component {
 
   getTimer() {
     $.get(`/api/timer/${this.roomID}`).then(timer => {
-      console.log('TIMER: ', timer);
+      let tock = new Tock({
+        countdown: true,
+        interval: 100,
+        callback: () => {
+          let time = tock.lap()
+          let seconds = (Math.floor((time / 1000) % 60));
+          let minutes = (Math.floor((time / (60000)) % 60));
+          seconds = (seconds < 10) ? "0" + seconds : seconds;
+          minutes = (minutes < 10) ? "0" + minutes : minutes;
+
+          this.setState({
+            timer: minutes + ':' + seconds
+          })
+        }
+      });
+      tock.start(timer.timeLeft);
     });
   }
 
@@ -254,6 +271,7 @@ class Room extends React.Component {
               <div className="tile is-parent is-vertical">
                 <article className="tile is-child notification">
                   <div id="current-restaurant">
+                    <p className="title">Time Remaining: {this.state.timer}</p>
                     <p className="title">Current Selection</p>
                     {currentSelection}
                     <button onClick={this.voteApprove} className="button is-success">

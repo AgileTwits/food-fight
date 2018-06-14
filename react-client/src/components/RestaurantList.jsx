@@ -44,10 +44,11 @@ class RestaurantList extends React.Component {
   }
 
   render() {
+    // console.log('Render restaurant list called')
     return (
       <div>
         {this.state.restaurants.map(restaurant => {
-          return <RestaurantListItem restaurant={restaurant} nominate={this.props.nominate} />;
+          return <RestaurantListItem restaurant={restaurant} nominate={this.props.nominate} key={restaurant.id}/>;
         })}
       </div>
     );

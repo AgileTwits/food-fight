@@ -24,8 +24,8 @@ class RestaurantListItem extends React.Component {
               <strong>{this.props.restaurant.name}</strong>
             </p>
             <ul>
-              {this.props.restaurant.categories.map(category => {
-                return <li>{category.title}</li>;
+              {this.props.restaurant.categories.map((category, index) => {
+                return <li key={index}>{category.title}</li>;
               })}
             </ul>
           </div>

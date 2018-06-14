@@ -20,14 +20,9 @@ class Room extends React.Component {
       votes: [],
       roomName: '',
       timer: '',
-      rooms: [],
       // The hasVoted functionality has not yet been implemented
       hasVoted: false,
     };
-    
-    this.retrieveRooms = this.retrieveRooms.bind(this);
-    setTimeout(this.retrieveRooms, 2000);
-
 
     this.roomID = this.props.match.params.roomID;
 
@@ -81,18 +76,6 @@ class Room extends React.Component {
     this.getTimer();
     this.getVotes();
     this.socket.emit('join', this.roomID);
-  }
-
-  // Joseph
-  retrieveRooms() {
-    if (this.props.username) {
-      let usernameObj = {username: this.props.username};
-      $.post('/api/userrooms', usernameObj).then((userrooms) => {
-        this.setState({
-          rooms: userrooms
-        })
-      });
-    }
   }
 
   getMessages() {

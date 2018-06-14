@@ -161,7 +161,7 @@ const saveRestaurant = (name, roomID, callback) => {
     });
 };
 
-const updateVotes = (name, roomId, callback) => {
+const updateVotes = (voter, restaurant_id, name, roomId, callback) => {
   db.models.Restaurant.findOne({
     where: {
       name,
@@ -188,6 +188,13 @@ const updateVotes = (name, roomId, callback) => {
     .catch((error) => {
       callback(error);
     });
+
+    //Joseph using SQL to update votes table
+    let sqlQuery = `INSERT INTO votes (restaurant_id, roomuniqueid, useremail, name, upvoted, created, updated) VALUES ('${restaurant_id}', '${roomId}', '${voter}', '${name}', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);`
+    console.log(sqlQuery)
+    db.sequelize.query(sqlQuery).spread((results) => {
+      console.log('AAAAAAAAAAAAAAA', results[0]);
+    })
 };
 
 const updateVetoes = (name, roomId, callback) => {

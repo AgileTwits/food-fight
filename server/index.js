@@ -270,8 +270,8 @@ app.post('/api/nominate', (req, res) => {
 });
 
 app.post('/api/votes', (req, res) => {
-  const { name, roomID } = req.body;
-  dbHelpers.updateVotes(name, roomID, (err, restaurant) => {
+  const { name, roomID, voter, restaurant_id } = req.body;
+  dbHelpers.updateVotes(voter, restaurant_id, name, roomID, (err, restaurant) => {
     if (err) {
       console.log('Error upvoting restaurant', err);
     } else {
@@ -297,6 +297,7 @@ app.get('/api/votes/:roomID', (req, res) => {
     if (err) {
       console.log('Error fetching scoreboard', err);
     } else {
+      console.log('JOSEPH', scores)
       res.send(scores);
     }
   });

@@ -196,6 +196,7 @@ class Room extends React.Component {
     let resName = name || this.state.currentSelection.name;
     let voteObj = {
       voter: this.props.username,
+      restaurant_id: this.state.currentSelection.id,
       name: resName,
       roomID: this.roomID,
     };

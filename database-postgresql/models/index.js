@@ -47,3 +47,4 @@ models.Sequelize = Sequelize;
 
 module.exports.models = models;
 module.exports.Op = Op;
+module.exports.sequelize = sequelize;

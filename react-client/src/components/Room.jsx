@@ -18,12 +18,15 @@ class Room extends React.Component {
       currentSelectionName: undefined,
       isNominating: true,
       votes: [],
-      loggedInUsername: null,
       roomName: '',
       timer: '',
       // The hasVoted functionality has not yet been implemented
       hasVoted: false,
     };
+    
+    setTimeout(() => console.log('ROOMa', this.props.username), 5000);
+
+
     this.roomID = this.props.match.params.roomID;
 
     this.nominateRestaurant = this.nominateRestaurant.bind(this);
@@ -76,9 +79,6 @@ class Room extends React.Component {
     this.getTimer();
     this.getVotes();
     this.socket.emit('join', this.roomID);
-    this.setState({
-      loggedInUsername: this.props.username
-    });
   }
 
   getMessages() {
@@ -161,9 +161,10 @@ class Room extends React.Component {
   }
 
   sendMessage() {
+    console.log(this.props.username)
     let messageObj = {
       message: {
-        name: this.state.name,
+        name: this.props.username || this.state.name,
         message: this.state.message,
       },
       roomID: this.roomID,
@@ -190,7 +191,7 @@ class Room extends React.Component {
     /* TO DO: Check if a user has already voted for
     the given restaurant to prevent duplicate votes */
     let voteObj = {
-      voter: this.state.loggedInUsername,
+      voter: this.props.username,
       name: this.state.currentSelection.name,
       roomID: this.roomID,
     };

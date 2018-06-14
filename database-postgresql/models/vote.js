@@ -5,15 +5,18 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       primaryKey: true,
     },
-    room_id: {
-      type: DataTypes.INTEGER,
+    roomuniqueid: {
+      type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true,
     },
-    user_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
+    useremail: {
+      type: DataTypes.STRING,
+      allowNull: false,
       primaryKey: true,
+      validate: {
+        isEmail: true,
+      },
     },
     name: {
       type: DataTypes.STRING,
@@ -23,6 +26,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       allowNull: false,
     },
+    created: {
+      type: 'timestamp',
+    },
+    updated: {
+      type: 'timestamp'
+    },
+  }, 
+  {
+    timestamps: false
   });
 
   return Vote;

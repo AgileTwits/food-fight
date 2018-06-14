@@ -177,6 +177,7 @@ class Room extends React.Component {
     the given restaurant to prevent duplicate votes */
     let voteObj = {
       voter: this.props.username,
+      restaurant_id: this.state.currentSelection.id,
       name: this.state.currentSelection.name,
       roomID: this.roomID,
     };

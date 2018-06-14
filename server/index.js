@@ -203,6 +203,18 @@ app.post('/room-redirect', (req, res) => {
   res.redirect(307, `/rooms/${req.body.id}`);
 });
 
+//Joseph
+app.post('/api/userrooms', (req, res) => {
+  const { username } = req.body;
+  dbHelpers.getRooms(username, (err, rooms) => {
+    if (err) {
+      console.log('Error getting rooms', err);
+    } else {
+      res.send(rooms);
+    }
+  });
+});
+
 
 //
 // ─── EXTERNAL API LOGIC ─────────────────────────────────────────────────────────

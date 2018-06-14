@@ -1,6 +1,7 @@
 import React from 'react';
 import io from 'socket.io-client';
 import $ from 'jquery';
+import Tock from 'tocktimer';
 import RestaurantList from './RestaurantList.jsx';
 import CurrentSelection from './CurrentSelection.jsx';
 
@@ -18,6 +19,7 @@ class Room extends React.Component {
       isNominating: true,
       votes: [],
       roomName: '',
+      timer: '',
       // The hasVoted functionality has not yet been implemented
       hasVoted: false,
     };
@@ -99,7 +101,23 @@ class Room extends React.Component {
 
   getTimer() {
     $.get(`/api/timer/${this.roomID}`).then(timer => {
-      console.log('TIMER: ', timer);
+      let tock = new Tock({
+        countdown: true,
+        interval: 100,
+        callback: () => {
+          let time = tock.lap()
+          let seconds = (Math.floor((time / 1000) % 60));
+          let minutes = (Math.floor((time / (60000)) % 60));
+          seconds = (seconds < 10) ? "0" + seconds : seconds;
+          minutes = (minutes < 10) ? "0" + minutes : minutes;
+
+          this.setState({
+            timer: minutes + ':' + seconds
+          })
+        }
+      });
+      console.log('STARTING TIMER');
+      tock.start(timer.timeLeft);
     });
   }
 
@@ -141,7 +159,7 @@ class Room extends React.Component {
         });
       }
       // A user who nominates a restaurant should automatically vote for it
-      this.voteApprove();
+      this.voteApprove(restaurant.name);
     }
   }
 
@@ -172,13 +190,14 @@ class Room extends React.Component {
     });
   }
 
-  voteApprove() {
+  voteApprove(name) {
     /* TO DO: Check if a user has already voted for
     the given restaurant to prevent duplicate votes */
+    let resName = name || this.state.currentSelection.name;
     let voteObj = {
       voter: this.props.username,
       restaurant_id: this.state.currentSelection.id,
-      name: this.state.currentSelection.name,
+      name: resName,
       roomID: this.roomID,
     };
     $.post('/api/votes', voteObj).then(() => {
@@ -255,9 +274,10 @@ class Room extends React.Component {
               <div className="tile is-parent is-vertical">
                 <article className="tile is-child notification">
                   <div id="current-restaurant">
+                    <p className="title">Time Remaining: {this.state.timer}</p>
                     <p className="title">Current Selection</p>
                     {currentSelection}
-                    <button onClick={this.voteApprove} className="button is-success">
+                    <button onClick={() => this.voteApprove()} className="button is-success">
                       Approve
             </button>
                     <button onClick={this.voteVeto} className="button is-danger">
@@ -279,7 +299,7 @@ class Room extends React.Component {
                               // <h5 style={{ backgroundColor: restaurant.vetoed ? 'white' : 'lightgrey' }}>
                               //   <strong>{restaurant.name}</strong> {restaurant.votes}
                               // </h5>
-                              <tr className={(restaurant.name === this.state.currentSelection.name) ? 'is-selected' : ''}>
+                              <tr>
                                 <td>{restaurant.name}</td>
                                 <td>{restaurant.votes}</td>
                               </tr>

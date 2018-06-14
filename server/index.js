@@ -297,6 +297,7 @@ app.get('/api/votes/:roomID', (req, res) => {
     if (err) {
       console.log('Error fetching scoreboard', err);
     } else {
+      console.log('JOSEPH', scores)
       res.send(scores);
     }
   });

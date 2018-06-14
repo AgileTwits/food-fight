@@ -296,8 +296,8 @@ app.post('/api/votes', (req, res) => {
 });
 
 app.post('/api/vetoes', (req, res) => {
-  const { name, roomID } = req.body;
-  dbHelpers.updateVetoes(name, roomID, (err, restaurant) => {
+  const { name, roomID, voter, restaurant_id } = req.body;
+  dbHelpers.updateVetoes(voter, restaurant_id, name, roomID, (err, restaurant) => {
     if (err) {
       console.log('Error vetoing restaurant', err);
     } else {

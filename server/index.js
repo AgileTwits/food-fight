@@ -234,8 +234,8 @@ app.post('/api/search', (req, res) => {
 // ─── HANDLE MESSAGES AND VOTES─────────────────────────────────────────────────────────
 //
 app.post('/api/messages', (req, res) => {
-  const { message, roomID } = req.body;
-  dbHelpers.saveMessage(message.name, message.message, roomID, (err, savedMessage) => {
+  const {user_id, message, roomID } = req.body;
+  dbHelpers.saveMessage(user_id, message.name, message.message, roomID, (err, savedMessage) => {
     if (err) {
       console.log('Error saving message', err);
       res.status(404).end();

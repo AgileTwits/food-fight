@@ -159,7 +159,7 @@ class Room extends React.Component {
         });
       }
       // A user who nominates a restaurant should automatically vote for it
-      this.voteApprove(restaurant.name);
+      this.voteApprove(restaurant.name, restaurant.id);
     }
   }
 
@@ -190,13 +190,14 @@ class Room extends React.Component {
     });
   }
 
-  voteApprove(name) {
+  voteApprove(name, id) {
     /* TO DO: Check if a user has already voted for
     the given restaurant to prevent duplicate votes */
     let resName = name || this.state.currentSelection.name;
+    let resId = id || this.state.currentSelection.id;
     let voteObj = {
       voter: this.props.username,
-      restaurant_id: this.state.currentSelection.id,
+      restaurant_id: resId,
       name: resName,
       roomID: this.roomID,
     };

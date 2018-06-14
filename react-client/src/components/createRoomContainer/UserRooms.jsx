@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 
 class UserRooms extends React.Component {
@@ -20,13 +21,13 @@ class UserRooms extends React.Component {
         <article className="tile is-child notification">
         <div className="content">
           <p className="title">Current Fights</p>
-          {this.state.rooms.map(room => {
-              return <div>
-                      <button
+          {this.state.rooms.map((room, index) => {
+              return <div key={index}>
+                      <Link to={`/rooms/${room.room_uniqueid}`} style={{ textDecoration: 'none' }}><button
                       className="button is-outlined is-primary is-small send-message is-fullWidth"
                       style={{width: "100%", margin: "1px"}}>
                       {room.room_name}
-                      </button>
+                      </button></Link>
                     </div>;
           })}
         </div>

@@ -30,30 +30,36 @@ const saveMember = (email, password, zipcode, callback) => {
 };
 
 const saveRoomAndMembers = (roomName, zip, members, id, callback) => {
-  const promisedMembers = members.map(memberEmail => db.models.User.findOne({
+  
+  let promisedMembers = members.map(memberEmail => db.models.User.findOne({
     where: {
       email: memberEmail,
     },
   }));
+  let foundUsers = [];
+  let newRoom = '';
 
-  db.models.Room.findOrCreate({
-    where: {
-      name: roomName,
-      uniqueid: id,
-      zipcode: zip,
-    },
-  })
+  Promise.all(promisedMembers)
+    .then((users) => {
+      foundUsers = users;
+      return db.models.Room.findOrCreate({
+        where: {
+          name: roomName,
+          uniqueid: id,
+          zipcode: zip,
+        },
+      });
+    })
     .then((room) => {
-      Promise.all(promisedMembers)
-        .then((users) => {
-          users.forEach((user) => {
-            room[0].addUser(user);
-          });
-          callback(null, room, users);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      newRoom = room;
+      let addUserPromises = [];
+      foundUsers.forEach((user) => {
+        addUserPromises.push(room[0].addUser(user));
+      });
+      return Promise.all(addUserPromises);
+    })
+    .then(() => {
+      callback(null, newRoom, foundUsers);
     })
     .catch((error) => {
       console.log(error);
@@ -205,13 +211,13 @@ const updateVotes = (voter, restaurant_id, name, roomId, callback) => {
       callback(error);
     });
 
-    //Joseph using SQL to update votes table
-    let strippedName = name.replace("'", '`');
-    let sqlQuery = `INSERT INTO votes (restaurant_id, roomuniqueid, useremail, name, upvoted, created, updated) VALUES ('${restaurant_id}', '${roomId}', '${voter}', '${strippedName}', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);`
-    console.log(sqlQuery)
-    db.sequelize.query(sqlQuery).spread((results) => {
-      console.log('AAAAAAAAAAAAAAA', results[0]);
-    })
+  // Joseph using SQL to update votes table
+  const strippedName = name.replace("'", '`');
+  const sqlQuery = `INSERT INTO votes (restaurant_id, roomuniqueid, useremail, name, upvoted, created, updated) VALUES ('${restaurant_id}', '${roomId}', '${voter}', '${strippedName}', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);`;
+  console.log(sqlQuery);
+  db.sequelize.query(sqlQuery).spread((results) => {
+    console.log('AAAAAAAAAAAAAAA', results[0]);
+  });
 };
 
 const updateVetoes = (name, roomId, callback) => {
@@ -259,17 +265,17 @@ const getScoreboard = (roomID, callback) => {
     .catch((error) => {
       callback(error);
     });
-  
-  let sqlQuery = `SELECT votes.restaurant_id, votes.name, CAST(votes.votes AS int), CASE WHEN vetoes.vetoes > 0 THEN true ELSE false END as vetoed 
+
+  const sqlQuery = `SELECT votes.restaurant_id, votes.name, CAST(votes.votes AS int), CASE WHEN vetoes.vetoes > 0 THEN true ELSE false END as vetoed 
   FROM (
     (SELECT restaurant_id, name, count(upvoted) as votes 
     FROM votes WHERE roomuniqueid = '${roomID}' AND upvoted = true GROUP BY restaurant_id, roomuniqueid, name) votes FULL JOIN 
     (SELECT restaurant_id, name, count(upvoted) as vetoes FROM votes WHERE roomuniqueid = '${roomID}' AND upvoted = false 
-    GROUP BY restaurant_id, roomuniqueid, name) vetoes ON votes.restaurant_id = vetoes.restaurant_id);`
+    GROUP BY restaurant_id, roomuniqueid, name) vetoes ON votes.restaurant_id = vetoes.restaurant_id);`;
   db.sequelize.query(sqlQuery).spread((results) => {
     console.log('GET VOTES', results);
     callback(null, results);
-  })
+  });
 };
 
 const saveWinner = (roomId, callback) => {

@@ -13,8 +13,8 @@ const CurrentSelection = props => (
           <strong>{props.restaurant.name}</strong>
         </p>
         <ul>
-          {props.restaurant.categories.map(category => {
-            return <li>{category.title}</li>;
+          {props.restaurant.categories.map((category, index) => {
+            return <li key={index}>{category.title}</li>;
           })}
         </ul>
       </div>

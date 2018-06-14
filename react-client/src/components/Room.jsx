@@ -20,11 +20,13 @@ class Room extends React.Component {
       votes: [],
       roomName: '',
       timer: '',
+      rooms: [],
       // The hasVoted functionality has not yet been implemented
       hasVoted: false,
     };
     
-    setTimeout(() => console.log('ROOMa', this.props.username), 5000);
+    this.retrieveRooms = this.retrieveRooms.bind(this);
+    setTimeout(this.retrieveRooms, 2000);
 
 
     this.roomID = this.props.match.params.roomID;
@@ -79,6 +81,18 @@ class Room extends React.Component {
     this.getTimer();
     this.getVotes();
     this.socket.emit('join', this.roomID);
+  }
+
+  // Joseph
+  retrieveRooms() {
+    if (this.props.username) {
+      let usernameObj = {username: this.props.username};
+      $.post('/api/userrooms', usernameObj).then((userrooms) => {
+        this.setState({
+          rooms: userrooms
+        })
+      });
+    }
   }
 
   getMessages() {
@@ -159,7 +173,7 @@ class Room extends React.Component {
         });
       }
       // A user who nominates a restaurant should automatically vote for it
-      this.voteApprove(restaurant.name);
+      this.voteApprove(restaurant.name, restaurant.id);
     }
   }
 
@@ -190,13 +204,14 @@ class Room extends React.Component {
     });
   }
 
-  voteApprove(name) {
+  voteApprove(name, id) {
     /* TO DO: Check if a user has already voted for
     the given restaurant to prevent duplicate votes */
     let resName = name || this.state.currentSelection.name;
+    let resId = id || this.state.currentSelection.id;
     let voteObj = {
       voter: this.props.username,
-      restaurant_id: this.state.currentSelection.id,
+      restaurant_id: resId,
       name: resName,
       roomID: this.roomID,
     };
@@ -248,7 +263,7 @@ class Room extends React.Component {
               </h1>
               <h2 className="subtitle">
                 <div>
-                  Fighters: {this.state.members.map(user => <span>{user.email} </span>)}
+                  Fighters: {this.state.members.map((user, index) => <span key={index}>{user.email} </span>)}
                 </div>
                 <div>Zipcode: {this.state.zipcode}</div>
               </h2>
@@ -295,11 +310,11 @@ class Room extends React.Component {
                             .sort((a, b) => {
                               return b.votes - a.votes;
                             })
-                            .map(restaurant => (
+                            .map((restaurant, index) => (
                               // <h5 style={{ backgroundColor: restaurant.vetoed ? 'white' : 'lightgrey' }}>
                               //   <strong>{restaurant.name}</strong> {restaurant.votes}
                               // </h5>
-                              <tr>
+                              <tr key={index}>
                                 <td>{restaurant.name}</td>
                                 <td>{restaurant.votes}</td>
                               </tr>

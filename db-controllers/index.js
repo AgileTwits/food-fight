@@ -131,6 +131,21 @@ const getRoomMembers = (roomID, callback) => {
     });
 };
 
+const getRooms = (email, callback) => {
+    //Joseph using SQL to get user's rooms
+    let sqlQuery = `SELECT rooms.id AS room_id, rooms.uniqueid AS room_uniqueid, rooms.name AS room_name 
+    FROM room_users 
+    FULL JOIN rooms 
+    ON room_users.room_id = rooms.id  
+    WHERE room_users.user_id = 
+    (SELECT ID FROM users WHERE email = '${email}');`
+    console.log(sqlQuery)
+    db.sequelize.query(sqlQuery).spread((results) => {
+      console.log('ROOOOOOOOOOOOMS', results);
+      callback(null, results)
+    })
+};
+
 //
 // ─── RESTAURANT TABLE HELPERS ─────────────────────────────────────────────────────────
 //
@@ -190,7 +205,8 @@ const updateVotes = (voter, restaurant_id, name, roomId, callback) => {
     });
 
     //Joseph using SQL to update votes table
-    let sqlQuery = `INSERT INTO votes (restaurant_id, roomuniqueid, useremail, name, upvoted, created, updated) VALUES ('${restaurant_id}', '${roomId}', '${voter}', '${name}', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);`
+    let strippedName = name.replace("'", '`');
+    let sqlQuery = `INSERT INTO votes (restaurant_id, roomuniqueid, useremail, name, upvoted, created, updated) VALUES ('${restaurant_id}', '${roomId}', '${voter}', '${strippedName}', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);`
     console.log(sqlQuery)
     db.sequelize.query(sqlQuery).spread((results) => {
       console.log('AAAAAAAAAAAAAAA', results[0]);
@@ -236,12 +252,23 @@ const getScoreboard = (roomID, callback) => {
     raw: true,
   })
     .then((scores) => {
-      // console.log('SCOREBOARD', scores);
-      callback(null, scores);
+      console.log('SCOREBOARD', scores);
+      // callback(null, scores);
     })
     .catch((error) => {
       callback(error);
     });
+  
+  let sqlQuery = `SELECT votes.restaurant_id, votes.name, CAST(votes.votes AS int), CASE WHEN vetoes.vetoes > 0 THEN true ELSE false END as vetoed 
+  FROM (
+    (SELECT restaurant_id, name, count(upvoted) as votes 
+    FROM votes WHERE roomuniqueid = '${roomID}' AND upvoted = true GROUP BY restaurant_id, roomuniqueid, name) votes FULL JOIN 
+    (SELECT restaurant_id, name, count(upvoted) as vetoes FROM votes WHERE roomuniqueid = '${roomID}' AND upvoted = false 
+    GROUP BY restaurant_id, roomuniqueid, name) vetoes ON votes.restaurant_id = vetoes.restaurant_id);`
+  db.sequelize.query(sqlQuery).spread((results) => {
+    console.log('GET VOTES', results);
+    callback(null, results);
+  })
 };
 
 module.exports = {
@@ -254,4 +281,5 @@ module.exports = {
   getScoreboard,
   saveMessage,
   getMessages,
+  getRooms,
 };

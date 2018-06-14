@@ -131,6 +131,21 @@ const getRoomMembers = (roomID, callback) => {
     });
 };
 
+const getRooms = (email, callback) => {
+    //Joseph using SQL to get user's rooms
+    let sqlQuery = `SELECT rooms.id AS room_id, rooms.uniqueid AS room_uniqueid, rooms.name AS room_name 
+    FROM room_users 
+    FULL JOIN rooms 
+    ON room_users.room_id = rooms.id  
+    WHERE room_users.user_id = 
+    (SELECT ID FROM users WHERE email = '${email}');`
+    console.log(sqlQuery)
+    db.sequelize.query(sqlQuery).spread((results) => {
+      console.log('ROOOOOOOOOOOOMS', results);
+      callback(null, results)
+    })
+};
+
 //
 // ─── RESTAURANT TABLE HELPERS ─────────────────────────────────────────────────────────
 //
@@ -266,4 +281,5 @@ module.exports = {
   getScoreboard,
   saveMessage,
   getMessages,
+  getRooms,
 };

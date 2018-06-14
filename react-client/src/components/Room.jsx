@@ -249,7 +249,7 @@ class Room extends React.Component {
               </h1>
               <h2 className="subtitle">
                 <div>
-                  Fighters: {this.state.members.map(user => <span>{user.email} </span>)}
+                  Fighters: {this.state.members.map((user, index) => <span key={index}>{user.email} </span>)}
                 </div>
                 <div>Zipcode: {this.state.zipcode}</div>
               </h2>

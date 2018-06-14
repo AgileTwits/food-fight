@@ -139,7 +139,6 @@ const getRooms = (email, callback) => {
     ON room_users.room_id = rooms.id  
     WHERE room_users.user_id = 
     (SELECT ID FROM users WHERE email = '${email}');`
-    console.log(sqlQuery)
     db.sequelize.query(sqlQuery).spread((results) => {
       console.log('ROOOOOOOOOOOOMS', results);
       callback(null, results)
@@ -207,10 +206,9 @@ const updateVotes = (voter, restaurant_id, name, roomId, callback) => {
     //Joseph using SQL to update votes table
     let strippedName = name.replace("'", '`');
     let sqlQuery = `INSERT INTO votes (restaurant_id, roomuniqueid, useremail, name, upvoted, created, updated) VALUES ('${restaurant_id}', '${roomId}', '${voter}', '${strippedName}', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);`
-    console.log(sqlQuery)
     db.sequelize.query(sqlQuery).spread((results) => {
-      console.log('AAAAAAAAAAAAAAA', results[0]);
-    })
+      console.log('VOTE', results[0]);
+    });
 };
 
 const updateVetoes = (name, roomId, callback) => {
@@ -239,6 +237,13 @@ const updateVetoes = (name, roomId, callback) => {
     .catch((error) => {
       callback(error);
     });
+
+    //Joseph using SQL to update votes table for veto
+    // let strippedName = name.replace("'", '`');
+    // let sqlQuery = `INSERT INTO votes (restaurant_id, roomuniqueid, useremail, name, upvoted, created, updated) VALUES ('${restaurant_id}', '${roomId}', '${voter}', '${strippedName}', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);`
+    // db.sequelize.query(sqlQuery).spread((results) => {
+    //   console.log('VETOE', results);
+    // });
 };
 
 const getScoreboard = (roomID, callback) => {
@@ -259,6 +264,7 @@ const getScoreboard = (roomID, callback) => {
       callback(error);
     });
   
+  //Joseph using SQL to get votes for restaurants for room
   let sqlQuery = `SELECT votes.restaurant_id, votes.name, CAST(votes.votes AS int), CASE WHEN vetoes.vetoes > 0 THEN true ELSE false END as vetoed 
   FROM (
     (SELECT restaurant_id, name, count(upvoted) as votes 

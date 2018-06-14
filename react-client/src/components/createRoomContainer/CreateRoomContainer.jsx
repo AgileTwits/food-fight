@@ -3,6 +3,7 @@ import axios from 'axios';
 import SearchUsersPanel from './SearchInvite/SearchUsersPanel.jsx';
 import InviteUsers from './SearchInvite/InviteUsers.jsx';
 import CreateRoom from './CreateRoom.jsx';
+import UserRooms from './UserRooms.jsx';
 
 class CreateRoomContainer extends React.Component {
   constructor(props) {
@@ -32,11 +33,12 @@ class CreateRoomContainer extends React.Component {
   render() {
     return (
       <div id="site-body" className="tile is-ancestor" >
-        <div className="tile is-parent is-vertical">
-          <SearchUsersPanel
-            searchUsers={this.props.searchUsers}
-            foundUsers={this.props.searchedUsers}
-            addCombatant={this.addCombatant.bind(this)} />
+        <div className="tile is-4 is-parent is-vertical">
+            <SearchUsersPanel
+              searchUsers={this.props.searchUsers}
+              foundUsers={this.props.searchedUsers}
+              addCombatant={this.addCombatant.bind(this)} />
+            <UserRooms />
         </div>
         <div className="tile is-parent is-vertical is-8">
           <article className="tile is-child notification create-room-container">
@@ -53,3 +55,5 @@ class CreateRoomContainer extends React.Component {
 }
 
 export default CreateRoomContainer;
+
+

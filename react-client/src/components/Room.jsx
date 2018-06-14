@@ -49,6 +49,13 @@ class Room extends React.Component {
       }
     });
 
+    this.socket.on('veto', roomID => {
+      if (roomID === this.roomID) {
+        console.log('Received veto');
+        this.getVotes();
+      }
+    });
+
     this.socket.on('nominate', nominee => {
       if (nominee.roomID === this.roomID) {
         console.log('Received nomination', nominee);
@@ -189,8 +196,6 @@ class Room extends React.Component {
   }
 
   voteApprove(name, id) {
-    /* TO DO: Check if a user has already voted for
-    the given restaurant to prevent duplicate votes */
     let resName = name || this.state.currentSelection.name;
     let resId = id || this.state.currentSelection.id;
     let voteObj = {
@@ -208,14 +213,18 @@ class Room extends React.Component {
   }
 
   voteVeto() {
+    let resId = this.state.currentSelection.id;
     this.setState({
       isNominating: true,
     });
     if (this.state.currentSelection) {
       let voteObj = {
+        voter: this.props.username,
+        restaurant_id: resId,
         name: this.state.currentSelection.name,
         roomID: this.roomID,
       };
+      console.log('INSIDE', voteObj)
       $.post('/api/vetoes', voteObj).then(() => {
         this.setState({
           currentSelection: undefined,

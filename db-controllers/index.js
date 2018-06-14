@@ -217,9 +217,15 @@ const updateVotes = (voter, restaurant_id, name, roomId, callback) => {
   db.sequelize.query(sqlQuery).spread((results) => {
     console.log('AAAAAAAAAAAAAAA', results[0]);
   });
+  
+  // Update query in case voter already vetoed. (Can't insert upvote if veto already exists for user for room)
+  const sqlUpdateQuery = `UPDATE votes SET upvoted = true WHERE restaurant_id = '${restaurant_id}' AND roomuniqueid = '${roomId}' AND useremail = '${voter}';`
+  db.sequelize.query(sqlUpdateQuery).spread((results) => {
+    console.log('UPDATE VOTE', results);
+  });
 };
 
-const updateVetoes = (name, roomId, callback) => {
+const updateVetoes = (voter, restaurant_id, name, roomId, callback) => {
   db.models.Restaurant.findOne({
     where: {
       name,
@@ -246,12 +252,18 @@ const updateVetoes = (name, roomId, callback) => {
       callback(error);
     });
 
-    //Joseph using SQL to update votes table for veto
-    // let strippedName = name.replace("'", '`');
-    // let sqlQuery = `INSERT INTO votes (restaurant_id, roomuniqueid, useremail, name, upvoted, created, updated) VALUES ('${restaurant_id}', '${roomId}', '${voter}', '${strippedName}', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);`
-    // db.sequelize.query(sqlQuery).spread((results) => {
-    //   console.log('VETOE', results);
-    // });
+    // Joseph using SQL to update votes table for veto
+    const strippedName = name.replace("'", '`');
+    const sqlQuery = `INSERT INTO votes (restaurant_id, roomuniqueid, useremail, name, upvoted, created, updated) VALUES ('${restaurant_id}', '${roomId}', '${voter}', '${strippedName}', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);`
+    db.sequelize.query(sqlQuery).spread((results) => {
+      console.log('INSERT VETOE', results);
+    });
+
+    // Update query in case voter already upvoted. (Can't insert rejection if upvote already exists for user for room)
+    const sqlUpdateQuery = `UPDATE votes SET upvoted = false WHERE restaurant_id = '${restaurant_id}' AND roomuniqueid = '${roomId}' AND useremail = '${voter}';`
+    db.sequelize.query(sqlUpdateQuery).spread((results) => {
+      console.log('UPDATE VETOE', results);
+    });
 };
 
 const getScoreboard = (roomID, callback) => {

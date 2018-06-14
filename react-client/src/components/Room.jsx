@@ -296,11 +296,11 @@ class Room extends React.Component {
                             .sort((a, b) => {
                               return b.votes - a.votes;
                             })
-                            .map(restaurant => (
+                            .map((restaurant, index) => (
                               // <h5 style={{ backgroundColor: restaurant.vetoed ? 'white' : 'lightgrey' }}>
                               //   <strong>{restaurant.name}</strong> {restaurant.votes}
                               // </h5>
-                              <tr>
+                              <tr key={index}>
                                 <td>{restaurant.name}</td>
                                 <td>{restaurant.votes}</td>
                               </tr>

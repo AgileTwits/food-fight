@@ -2,6 +2,10 @@ const db = require('../database-postgresql/models');
 const bcrypt = require('bcrypt');
 const uniqueString = require('unique-string');
 
+// db.sequelize.query('SELECT * FROM users').spread((results) => {
+//   console.log('AAAAAAAAAAAAAAA', results[0]);
+// })
+
 //
 // ─── USER TABLE HELPERS ─────────────────────────────────────────────────────────
 //
@@ -58,8 +62,8 @@ const saveRoomAndMembers = (roomName, zip, members, id, callback) => {
 //
 // ─── MESSAGE TABLE HELPERS ─────────────────────────────────────────────────────────
 //
-const saveMessage = (name, message, roomID, callback) => {
-  console.log('Saving message', name, message, roomID);
+const saveMessage = (user_id, name, message, roomID, callback) => {
+  console.log('Saving message', user_id, name, message, roomID);
   db.models.Room.findOne({
     where: {
       uniqueid: roomID,
@@ -88,7 +92,7 @@ const saveMessage = (name, message, roomID, callback) => {
 
 const getMessages = (roomID, callback) => {
   db.models.Message.findAll({
-    attributes: ['name', 'message'],
+    attributes: ['user_id', 'name', 'message'],
     include: [{
       model: db.models.Room,
       where: { uniqueid: roomID },

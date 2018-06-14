@@ -17,6 +17,7 @@ class MainView extends React.Component {
     this.setState({
       loggedInUser: this.props.loggedInUser
     });
+    console.log('MAINVIEW', this.props.loggedInUser)
   }
 
   render() {
@@ -30,7 +31,23 @@ class MainView extends React.Component {
             loggedIn={this.props.loggedIn}
             loggedInUser={this.props.loggedInUser}
             {...props} />} />,
-        < Route path="/rooms/:roomID" component={Room} />
+        < Route path="/rooms/:roomID" render={
+          <Room username={this.state.loggedInUser} />
+          } />
+        
+
+        {/* <Route exact path="/" render={
+            () => <MainView
+              searchUsers={this.searchUsers.bind(this)}
+              searchedUsers={this.props.searchedUsers}
+              loggedInUser={this.state.loggedInUsername}
+            />} />
+          <Route path="/signup" render={
+            () => <SignupPage
+              subscribe={this.subscribe.bind(this)}
+            />} /> */}
+
+
       </div>
     )
   }

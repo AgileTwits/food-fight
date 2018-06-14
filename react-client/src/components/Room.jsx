@@ -116,6 +116,7 @@ class Room extends React.Component {
           })
         }
       });
+      console.log('STARTING TIMER');
       tock.start(timer.timeLeft);
     });
   }
@@ -158,7 +159,7 @@ class Room extends React.Component {
         });
       }
       // A user who nominates a restaurant should automatically vote for it
-      this.voteApprove();
+      this.voteApprove(restaurant.name);
     }
   }
 
@@ -189,12 +190,13 @@ class Room extends React.Component {
     });
   }
 
-  voteApprove() {
+  voteApprove(name) {
     /* TO DO: Check if a user has already voted for
     the given restaurant to prevent duplicate votes */
+    let resName = name || this.state.currentSelection.name;
     let voteObj = {
       voter: this.props.username,
-      name: this.state.currentSelection.name,
+      name: resName,
       roomID: this.roomID,
     };
     $.post('/api/votes', voteObj).then(() => {
@@ -274,7 +276,7 @@ class Room extends React.Component {
                     <p className="title">Time Remaining: {this.state.timer}</p>
                     <p className="title">Current Selection</p>
                     {currentSelection}
-                    <button onClick={this.voteApprove} className="button is-success">
+                    <button onClick={() => this.voteApprove()} className="button is-success">
                       Approve
             </button>
                     <button onClick={this.voteVeto} className="button is-danger">
@@ -296,7 +298,7 @@ class Room extends React.Component {
                               // <h5 style={{ backgroundColor: restaurant.vetoed ? 'white' : 'lightgrey' }}>
                               //   <strong>{restaurant.name}</strong> {restaurant.votes}
                               // </h5>
-                              <tr className={(restaurant.name === this.state.currentSelection.name) ? 'is-selected' : ''}>
+                              <tr>
                                 <td>{restaurant.name}</td>
                                 <td>{restaurant.votes}</td>
                               </tr>

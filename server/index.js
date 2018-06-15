@@ -221,6 +221,11 @@ app.post('/api/userrooms', (req, res) => {
   });
 });
 
+app.get('/api/getWinner/:roomID', (req, res) => {
+  const { roomID } = req.params;
+  dbHelpers.getWinner(roomID, (response) => {res.send(response)})
+});
+
 
 //
 // ─── EXTERNAL API LOGIC ─────────────────────────────────────────────────────────
@@ -246,6 +251,25 @@ app.post('/api/search', (req, res) => {
     res.send(JSON.parse(data.body));
   });
 });
+
+app.post('/api/search/restaurant', (req, res) => {
+  const { restId } = req.body;
+  console.log('Fetching restaurant details for ', restId);
+  const options = {
+    method: 'GET',
+    uri: `https://api.yelp.com/v3/businesses/${restId}`,
+    headers: {
+      Authorization: `Bearer ${process.env.YELP_API_KEY}`,
+    }
+  }
+  request(options, (err, data) => {
+    if (err) {
+      console.log('Error getting restaurant details', err);
+      res.status(404).end();
+    }
+    res.send(JSON.parse(data.body));
+  });
+})
 
 
 //

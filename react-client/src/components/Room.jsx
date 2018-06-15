@@ -20,6 +20,7 @@ class Room extends React.Component {
       votes: [],
       roomName: '',
       timer: '',
+      winner: {},
       // The hasVoted functionality has not yet been implemented
       hasVoted: false,
     };
@@ -143,10 +144,22 @@ class Room extends React.Component {
           this.setState({
             timer: minutes + ':' + seconds
           })
+        },
+        complete: () => {
+          $.get(`/api/getWinner/${this.roomID}`).then(winner => {
+            console.log('WINNER: ', winner);
+            $.post('/api/search/restaurant', {
+              restId: winner
+            }).then((winner) => {
+              this.setState({
+                winner: winner
+              })
+            })
+          });
         }
       });
       console.log('STARTING TIMER');
-      tock.start(timer.timeLeft);
+      tock.start(timer.timeLeft + 1000);
     });
   }
 
@@ -301,15 +314,17 @@ class Room extends React.Component {
                 {/* <div className="is-divider" /> */}
                 <article className="tile is-child notification">
                   <div id="yelp-list">
-                    <p className="title">Local Restaurants</p>
-                    {restaurantList}
+                    {this.state.winner.id ? 
+                    <div>Winner</div> :
+                    restaurantList}
                   </div>
                 </article>
               </div>
             </div>
             <div className="column">
               <div className="tile is-parent is-vertical">
-                <article className="tile is-child notification">
+                {this.state.winner.id ? '' : 
+                  <article className="tile is-child notification">
                   <div id="current-restaurant">
                     <p className="title">Time Remaining: {this.state.timer}</p>
                     <p className="title">Current Selection</p>
@@ -345,7 +360,7 @@ class Room extends React.Component {
                       </table>
                     </div>
                   </div>
-                </article>
+                </article>}
                 <article className="tile is-child notification">
                   <div id="chat">
                     <h4 className="is-size-4">Live Chat</h4>

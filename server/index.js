@@ -170,13 +170,18 @@ app.post('/api/save', (req, res) => {
   let roomUnique = uniqueString();
   timerObj[roomUnique] = new tock({
     countdown: true,
+    complete: () => {
+      console.log('TIMER OVER');
+      dbHelpers.saveWinner(roomUnique)
+    }
   });
-  timerObj[roomUnique].start(300000);
+  timerObj[roomUnique].start(60000);
 
   dbHelpers.saveRoomAndMembers(roomName, zip, members, roomUnique, (err, room, users) => {
     if (err) {
       console.log('Error saving room and members', err);
     } else {
+      console.log(`Saved room: ${roomName}`);
       res.send(room[0].dataValues);
     }
   });
@@ -188,6 +193,7 @@ app.get('/api/rooms/:roomID', (req, res) => {
     if (err) {
       console.log('Error getting room members', err);
     } else {
+      console.log(`Got for ${roomID} roommembers: ${JSON.stringify(roomMembers)}`)
       res.send(roomMembers);
     }
   });
@@ -271,7 +277,7 @@ app.get('/api/messages/:roomID', (req, res) => {
 });
 
 app.post('/api/nominate', (req, res) => {
-  const { name, roomID } = req.body;
+  const { name, roomID, restaurantID } = req.body;
   dbHelpers.saveRestaurant(name, roomID, (err, restaurant) => {
     if (err) {
       console.log('Error saving restaurant', err);
@@ -279,6 +285,16 @@ app.post('/api/nominate', (req, res) => {
       res.end('Restaurant saved!', restaurant);
     }
   });
+  //Joseph SQL
+  console.log('HEYY', roomID, restaurantID)
+  dbHelpers.saveCurrentRestaurant(roomID, restaurantID, (err, restaurant) => {
+    if (err) {
+      console.log('Error saving current restaurant', err);
+    } else {
+      res.end('Current restaurant saved!', restaurant);
+    }
+  });
+
 });
 
 app.post('/api/votes', (req, res) => {
@@ -293,8 +309,8 @@ app.post('/api/votes', (req, res) => {
 });
 
 app.post('/api/vetoes', (req, res) => {
-  const { name, roomID } = req.body;
-  dbHelpers.updateVetoes(name, roomID, (err, restaurant) => {
+  const { name, roomID, voter, restaurant_id } = req.body;
+  dbHelpers.updateVetoes(voter, restaurant_id, name, roomID, (err, restaurant) => {
     if (err) {
       console.log('Error vetoing restaurant', err);
     } else {

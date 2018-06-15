@@ -1,6 +1,7 @@
 const db = require('../database-postgresql/models');
 const bcrypt = require('bcrypt');
 const uniqueString = require('unique-string');
+const sequelize = require('sequelize');
 
 // db.sequelize.query('SELECT * FROM users').spread((results) => {
 //   console.log('AAAAAAAAAAAAAAA', results[0]);
@@ -29,30 +30,36 @@ const saveMember = (email, password, zipcode, callback) => {
 };
 
 const saveRoomAndMembers = (roomName, zip, members, id, callback) => {
-  const promisedMembers = members.map(memberEmail => db.models.User.findOne({
+  
+  let promisedMembers = members.map(memberEmail => db.models.User.findOne({
     where: {
       email: memberEmail,
     },
   }));
+  let foundUsers = [];
+  let newRoom = '';
 
-  db.models.Room.findOrCreate({
-    where: {
-      name: roomName,
-      uniqueid: id,
-      zipcode: zip,
-    },
-  })
+  Promise.all(promisedMembers)
+    .then((users) => {
+      foundUsers = users;
+      return db.models.Room.findOrCreate({
+        where: {
+          name: roomName,
+          uniqueid: id,
+          zipcode: zip,
+        },
+      });
+    })
     .then((room) => {
-      Promise.all(promisedMembers)
-        .then((users) => {
-          users.forEach((user) => {
-            room[0].addUser(user);
-          });
-          callback(null, room, users);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      newRoom = room;
+      let addUserPromises = [];
+      foundUsers.forEach((user) => {
+        addUserPromises.push(room[0].addUser(user));
+      });
+      return Promise.all(addUserPromises);
+    })
+    .then(() => {
+      callback(null, newRoom, foundUsers);
     })
     .catch((error) => {
       console.log(error);
@@ -139,7 +146,6 @@ const getRooms = (email, callback) => {
     ON room_users.room_id = rooms.id  
     WHERE room_users.user_id = 
     (SELECT ID FROM users WHERE email = '${email}');`
-    console.log(sqlQuery)
     db.sequelize.query(sqlQuery).spread((results) => {
       console.log('ROOOOOOOOOOOOMS', results);
       callback(null, results)
@@ -176,6 +182,13 @@ const saveRestaurant = (name, roomID, callback) => {
     });
 };
 
+const saveCurrentRestaurant = (roomID, restaurantID, callback) => {
+  const sqlQuery = `UPDATE rooms SET currentrestaurant = '${restaurantID}' WHERE uniqueid = '${roomID}';`;
+  db.sequelize.query(sqlQuery).spread((results) => {
+    console.log('AAAAAAAAAAAAAAA', results[0]);
+  });
+};
+
 const updateVotes = (voter, restaurant_id, name, roomId, callback) => {
   db.models.Restaurant.findOne({
     where: {
@@ -204,16 +217,21 @@ const updateVotes = (voter, restaurant_id, name, roomId, callback) => {
       callback(error);
     });
 
-    //Joseph using SQL to update votes table
-    let strippedName = name.replace("'", '`');
-    let sqlQuery = `INSERT INTO votes (restaurant_id, roomuniqueid, useremail, name, upvoted, created, updated) VALUES ('${restaurant_id}', '${roomId}', '${voter}', '${strippedName}', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);`
-    console.log(sqlQuery)
-    db.sequelize.query(sqlQuery).spread((results) => {
-      console.log('AAAAAAAAAAAAAAA', results[0]);
-    })
+  // Joseph using SQL to update votes table
+  const strippedName = name.replace("'", '`');
+  const sqlQuery = `INSERT INTO votes (restaurant_id, roomuniqueid, useremail, name, upvoted, created, updated) VALUES ('${restaurant_id}', '${roomId}', '${voter}', '${strippedName}', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);`;
+  db.sequelize.query(sqlQuery).spread((results) => {
+    console.log('AAAAAAAAAAAAAAA', results[0]);
+  });
+  
+  // Update query in case voter already vetoed. (Can't insert upvote if veto already exists for user for room)
+  const sqlUpdateQuery = `UPDATE votes SET upvoted = true WHERE restaurant_id = '${restaurant_id}' AND roomuniqueid = '${roomId}' AND useremail = '${voter}';`;
+  db.sequelize.query(sqlUpdateQuery).spread((results) => {
+    console.log('UPDATE VOTE', results);
+  });
 };
 
-const updateVetoes = (name, roomId, callback) => {
+const updateVetoes = (voter, restaurant_id, name, roomId, callback) => {
   db.models.Restaurant.findOne({
     where: {
       name,
@@ -239,6 +257,19 @@ const updateVetoes = (name, roomId, callback) => {
     .catch((error) => {
       callback(error);
     });
+
+    // Joseph using SQL to update votes table for veto
+    const strippedName = name.replace("'", '`');
+    const sqlQuery = `INSERT INTO votes (restaurant_id, roomuniqueid, useremail, name, upvoted, created, updated) VALUES ('${restaurant_id}', '${roomId}', '${voter}', '${strippedName}', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);`
+    db.sequelize.query(sqlQuery).spread((results) => {
+      console.log('INSERT VETOE', results);
+    });
+
+    // Update query in case voter already upvoted. (Can't insert rejection if upvote already exists for user for room)
+    const sqlUpdateQuery = `UPDATE votes SET upvoted = false WHERE restaurant_id = '${restaurant_id}' AND roomuniqueid = '${roomId}' AND useremail = '${voter}';`
+    db.sequelize.query(sqlUpdateQuery).spread((results) => {
+      console.log('UPDATE VETOE', results);
+    });
 };
 
 const getScoreboard = (roomID, callback) => {
@@ -258,28 +289,56 @@ const getScoreboard = (roomID, callback) => {
     .catch((error) => {
       callback(error);
     });
-  
-  let sqlQuery = `SELECT votes.restaurant_id, votes.name, CAST(votes.votes AS int), CASE WHEN vetoes.vetoes > 0 THEN true ELSE false END as vetoed 
+
+  const sqlQuery = `SELECT votes.restaurant_id, votes.name, CAST(votes.votes AS int), CASE WHEN vetoes.vetoes > 0 THEN true ELSE false END as vetoed 
   FROM (
     (SELECT restaurant_id, name, count(upvoted) as votes 
     FROM votes WHERE roomuniqueid = '${roomID}' AND upvoted = true GROUP BY restaurant_id, roomuniqueid, name) votes FULL JOIN 
     (SELECT restaurant_id, name, count(upvoted) as vetoes FROM votes WHERE roomuniqueid = '${roomID}' AND upvoted = false 
-    GROUP BY restaurant_id, roomuniqueid, name) vetoes ON votes.restaurant_id = vetoes.restaurant_id);`
+    GROUP BY restaurant_id, roomuniqueid, name) vetoes ON votes.restaurant_id = vetoes.restaurant_id);`;
   db.sequelize.query(sqlQuery).spread((results) => {
     console.log('GET VOTES', results);
     callback(null, results);
-  })
+  });
 };
+
+const saveWinner = (roomId, callback) => {
+  console.log('SAVING WINNER FOR: ', roomId);
+  db.models.Vote
+    .findAll({
+      where: {roomuniqueid: roomId},
+      attributes: ['restaurant_id',
+        [sequelize.fn('count', sequelize.col('upvoted')), 'votes']],
+      group: ['restaurant_id'],
+      order: [['count', 'DESC']]
+    })
+    .then((res) => {
+      let restId = res[0].dataValues.restaurant_id;
+      db.models.Room
+        .update({
+          winningrestaurant: restId
+        }, {
+          where: {uniqueid: roomId},
+          returning: true,
+          plain: true
+        })
+    })
+    .catch((err) => {
+      console.log('Error Saving Winner');
+    });
+}
 
 module.exports = {
   saveMember,
   saveRoomAndMembers,
   getRoomMembers,
   saveRestaurant,
+  saveCurrentRestaurant,
   updateVotes,
   updateVetoes,
   getScoreboard,
   saveMessage,
   getMessages,
   getRooms,
+  saveWinner
 };

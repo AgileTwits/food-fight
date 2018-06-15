@@ -12,15 +12,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER(6),
       allowNull: false,
     },
-    winningUser: {
+    winninguser: {
       type: DataTypes.INTEGER(6),
       allowNull: true,
     },
-    currentRestaurant: {
+    currentrestaurant: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    winningRestaurant: {
+    winningrestaurant: {
       type: DataTypes.STRING,
       allowNull: true,
     }

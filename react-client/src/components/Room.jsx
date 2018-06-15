@@ -20,14 +20,9 @@ class Room extends React.Component {
       votes: [],
       roomName: '',
       timer: '',
-      rooms: [],
       // The hasVoted functionality has not yet been implemented
       hasVoted: false,
     };
-    
-    this.retrieveRooms = this.retrieveRooms.bind(this);
-    setTimeout(this.retrieveRooms, 2000);
-
 
     this.roomID = this.props.match.params.roomID;
 
@@ -50,6 +45,13 @@ class Room extends React.Component {
     this.socket.on('vote', roomID => {
       if (roomID === this.roomID) {
         console.log('Received vote');
+        this.getVotes();
+      }
+    });
+
+    this.socket.on('veto', roomID => {
+      if (roomID === this.roomID) {
+        console.log('Received veto');
         this.getVotes();
       }
     });
@@ -83,18 +85,6 @@ class Room extends React.Component {
     this.socket.emit('join', this.roomID);
   }
 
-  // Joseph
-  retrieveRooms() {
-    if (this.props.username) {
-      let usernameObj = {username: this.props.username};
-      $.post('/api/userrooms', usernameObj).then((userrooms) => {
-        this.setState({
-          rooms: userrooms
-        })
-      });
-    }
-  }
-
   getMessages() {
     $.get(`/api/messages/${this.roomID}`).then(messages => {
       this.setState({
@@ -105,6 +95,7 @@ class Room extends React.Component {
 
   getRoomInfo() {
     $.get(`/api/rooms/${this.roomID}`).then(roomMembers => {
+      console.log(`Got roommembers: ${JSON.stringify(roomMembers)} from ${this.roomID}`)
       this.setState({
         members: roomMembers,
         zipcode: roomMembers[0].rooms[0].zipcode,
@@ -163,6 +154,7 @@ class Room extends React.Component {
         let voteObj = {
           name: restaurant.name,
           roomID: this.roomID,
+          restaurantID: restaurant.id,
         };
         let nomObj = {
           restaurant: restaurant,
@@ -173,6 +165,7 @@ class Room extends React.Component {
         });
       }
       // A user who nominates a restaurant should automatically vote for it
+      // Socket is not refreshing table for some reason but still sends vote
       this.voteApprove(restaurant.name, restaurant.id);
     }
   }
@@ -205,8 +198,6 @@ class Room extends React.Component {
   }
 
   voteApprove(name, id) {
-    /* TO DO: Check if a user has already voted for
-    the given restaurant to prevent duplicate votes */
     let resName = name || this.state.currentSelection.name;
     let resId = id || this.state.currentSelection.id;
     let voteObj = {
@@ -224,14 +215,18 @@ class Room extends React.Component {
   }
 
   voteVeto() {
+    let resId = this.state.currentSelection.id;
     this.setState({
       isNominating: true,
     });
     if (this.state.currentSelection) {
       let voteObj = {
+        voter: this.props.username,
+        restaurant_id: resId,
         name: this.state.currentSelection.name,
         roomID: this.roomID,
       };
+      console.log('INSIDE', voteObj)
       $.post('/api/vetoes', voteObj).then(() => {
         this.setState({
           currentSelection: undefined,

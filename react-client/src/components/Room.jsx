@@ -204,6 +204,12 @@ class Room extends React.Component {
     });
   }
 
+  handleKeyPress(event) {
+    if (event.key == 'Enter') {
+      this.sendMessage();
+    }
+  }
+
   // Update from text boxes in the live chat
   updateName(e) {
     this.setState({
@@ -352,11 +358,13 @@ class Room extends React.Component {
                   <div id="chat">
                     <h4 className="is-size-4">{this.state.roomName} Chatroom</h4>
                     <div className="chat-messages">
-                      {this.state.messages.map(message => (
-                        <p>
-                          <strong>{message.name}:</strong> {message.message}
-                        </p>
-                      ))}
+                      {this.state.messages.map(message => {
+                        if(this.props.username === message.name) {
+                          return (<div style={{textAlign:"right", backgroundColor:"#ffe6e6", borderTop:"1px solid black", padding:"5px"}}>{message.message}</div>)
+                        } else {
+                          return (<div style={{textAlign:"left", backgroundColor:"#f0f5f5", borderTop:"1px solid black", padding:"5px"}}><strong>{message.name}:</strong> {message.message}</div>)
+                        }
+                      })}
                     </div>
                     <div>
                       <span>
@@ -365,6 +373,7 @@ class Room extends React.Component {
                               className="input is-primary is-small is-rounded"
                               value={this.state.message}
                               onChange={this.updateMessage.bind(this)}
+                              onKeyPress={this.handleKeyPress.bind(this)}
                               style={{width:'450px', marginTop:'15px', marginRight:'15px'}}
                             />
                       </span>

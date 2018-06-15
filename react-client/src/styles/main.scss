@@ -327,4 +327,11 @@ $font-size: 25px;
     width: 600px;
     margin-top: 15px;
   }
+  .chat-self {
+    text-align: "right";
+    background-color: "red";
+  }
+  .chat-others {
+    text-align: "left";
+  }
 }

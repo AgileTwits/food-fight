@@ -98,16 +98,18 @@ class Room extends React.Component {
       roomID: this.roomID
     }
     $.post('/api/currentrestaurant', roomIDObj).then((restaurant) => {
-      let restaurantObj = {
-        image_url: '',
-        name: 'hi',
-        categories: ['a','b','c']
-      }
-      this.setState({
-        currentSelection: restaurantObj,
+      $.post('/api/search/restaurant', {
+        restId: restaurant[0].currentrestaurant
+      }).then((current) => {
+        console.log('Mounting Restaurant', current);
+        if ('error' in current === false) {
+          console.log('has error');
+          this.setState({
+            currentSelection: current,
+            isNominating: false,
+          });
+        }
       });
-      console.log('asdSDFSDFDSFf',restaurantObj)
-      console.log('RESTSTST', restaurant[0].currentrestaurant)
     });
   }
 

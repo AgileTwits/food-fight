@@ -23,7 +23,8 @@ class Room extends React.Component {
       // The hasVoted functionality has not yet been implemented
       hasVoted: false,
     };
-
+    //remove
+    console.log(process.env.PORT);
     this.roomID = this.props.match.params.roomID;
 
     this.nominateRestaurant = this.nominateRestaurant.bind(this);

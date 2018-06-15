@@ -155,6 +155,7 @@ class Room extends React.Component {
           name: restaurant.name,
           roomID: this.roomID,
         };
+        console.log('vote', voteObj)
         let nomObj = {
           restaurant: restaurant,
           roomID: this.roomID,
@@ -164,6 +165,7 @@ class Room extends React.Component {
         });
       }
       // A user who nominates a restaurant should automatically vote for it
+      // Socket is not refreshing table for some reason but still sends vote
       this.voteApprove(restaurant.name, restaurant.id);
     }
   }

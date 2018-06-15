@@ -149,7 +149,7 @@ class App extends React.Component {
   render() {
     let room = this.state.loggedInUsername
       ? <Route path="/rooms/:roomID" render={(props) => <Room username={this.state.loggedInUsername} {...props} />} />
-      : <Route path="/rooms/:roomID" component={Room} />
+      : ''
     return (
       <BrowserRouter>
         <div>

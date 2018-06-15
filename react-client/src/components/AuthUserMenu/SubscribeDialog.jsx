@@ -21,6 +21,7 @@ class SubscribeDialog extends React.Component {
     this.enterEmail = this.enterEmail.bind(this);
     this.enterPassword = this.enterPassword.bind(this);
     this.enterZip = this.enterZip.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
   }
 
 
@@ -83,6 +84,12 @@ class SubscribeDialog extends React.Component {
       this.state.email,
       this.state.password,
       this.state.zip);
+  }
+
+  handleKeyPress(event) {
+    if (event.key == 'Enter') {
+      this.handleSubscribe();
+    }
   }
 
 
@@ -156,7 +163,8 @@ class SubscribeDialog extends React.Component {
                     type="email"
                     placeholder="johndoe@gmail.com"
                     value={this.state.email}
-                    onChange={this.enterEmail} />
+                    onChange={this.enterEmail}
+                    onKeyPress={this.handleKeyPress} />
                   <span className="icon is-small is-left">
                     <i className="fas fa-envelope"></i>
                   </span>
@@ -171,7 +179,8 @@ class SubscribeDialog extends React.Component {
                     type="password"
                     placeholder="password123"
                     value={this.state.password}
-                    onChange={this.enterPassword} />
+                    onChange={this.enterPassword}
+                    onKeyPress={this.handleKeyPress} />
                   <span className="icon is-small is-left">
                     <i className="fas fa-lock"></i>
                   </span>
@@ -184,7 +193,8 @@ class SubscribeDialog extends React.Component {
                     {...isZipValid1}
                     placeholder="78701"
                     value={this.state.zip}
-                    onChange={this.enterZip} />
+                    onChange={this.enterZip}
+                    onKeyPress={this.handleKeyPress} />
                   <span className="icon is-small is-left">
                     <i className="fas fa-home"></i>
                   </span>

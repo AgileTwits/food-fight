@@ -106,7 +106,7 @@ class Room extends React.Component {
         currentSelection: restaurantObj,
       });
       console.log('asdSDFSDFDSFf',restaurantObj)
-      console.log('RESTSTST',restaurant[0].currentrestaurant)
+      console.log('RESTSTST', restaurant[0].currentrestaurant)
     });
   }
 

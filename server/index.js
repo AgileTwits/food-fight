@@ -277,7 +277,7 @@ app.get('/api/messages/:roomID', (req, res) => {
 });
 
 app.post('/api/nominate', (req, res) => {
-  const { name, roomID } = req.body;
+  const { name, roomID, restaurantID } = req.body;
   dbHelpers.saveRestaurant(name, roomID, (err, restaurant) => {
     if (err) {
       console.log('Error saving restaurant', err);
@@ -285,6 +285,16 @@ app.post('/api/nominate', (req, res) => {
       res.end('Restaurant saved!', restaurant);
     }
   });
+  //Joseph SQL
+  console.log('HEYY', roomID, restaurantID)
+  dbHelpers.saveCurrentRestaurant(roomID, restaurantID, (err, restaurant) => {
+    if (err) {
+      console.log('Error saving current restaurant', err);
+    } else {
+      res.end('Current restaurant saved!', restaurant);
+    }
+  });
+
 });
 
 app.post('/api/votes', (req, res) => {

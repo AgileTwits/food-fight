@@ -4,8 +4,8 @@ import $ from 'jquery';
 import Tock from 'tocktimer';
 import RestaurantList from './RestaurantList.jsx';
 import CurrentSelection from './CurrentSelection.jsx';
-import sizeMe from 'react-sizeme'
-import Confetti from 'react-confetti'
+import sizeMe from 'react-sizeme';
+import Confetti from 'react-confetti';
 
 class Room extends React.Component {
   constructor(props) {

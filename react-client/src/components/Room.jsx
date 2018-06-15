@@ -350,37 +350,31 @@ class Room extends React.Component {
                 </article>}
                 <article className="tile is-child notification">
                   <div id="chat">
-                    <h4 className="is-size-4">Live Chat</h4>
-                    <div>
-                      Name{' '}
-                      <input
-                        type="text"
-                        className="input"
-                        value={this.state.name}
-                        onChange={this.updateName.bind(this)}
-                      />
-                    </div>
-                    <span>
-                      Message{' '}
-                      <input
-                        type="text"
-                        className="input"
-                        value={this.state.message}
-                        onChange={this.updateMessage.bind(this)}
-                      />
-                    </span>
-                    <button
-                      onClick={this.sendMessage.bind(this)}
-                      className="button is-outlined is-primary is-medium send-message"
-                    >
-                      Send
-            </button>
+                    <h4 className="is-size-4">{this.state.roomName} Chatroom</h4>
                     <div className="chat-messages">
                       {this.state.messages.map(message => (
                         <p>
                           <strong>{message.name}:</strong> {message.message}
                         </p>
                       ))}
+                    </div>
+                    <div>
+                      <span>
+                            <input
+                              type="text"
+                              className="input is-primary is-small is-rounded"
+                              value={this.state.message}
+                              onChange={this.updateMessage.bind(this)}
+                              style={{width:'450px', marginTop:'15px', marginRight:'15px'}}
+                            />
+                      </span>
+                      <button
+                        onClick={this.sendMessage.bind(this)}
+                        className="button is-outlined is-primary is-small send-message"
+                        style={{marginTop:'15px'}}
+                      >
+                        Send
+                      </button>
                     </div>
                   </div>
                 </article>

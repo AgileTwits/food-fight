@@ -20,6 +20,7 @@ class Room extends React.Component {
       votes: [],
       roomName: '',
       timer: '',
+      winner: {},
       // The hasVoted functionality has not yet been implemented
       hasVoted: false,
     };
@@ -123,6 +124,18 @@ class Room extends React.Component {
           this.setState({
             timer: minutes + ':' + seconds
           })
+        },
+        complete: () => {
+          $.get(`/api/getWinner/${this.roomID}`).then(winner => {
+            console.log('WINNER: ', winner);
+            $.post('/api/search/restaurant', {
+              restId: winner
+            }).then((winner) => {
+              this.setState({
+                winner: winner
+              })
+            })
+          });
         }
       });
       console.log('STARTING TIMER');

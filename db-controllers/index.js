@@ -328,6 +328,21 @@ const saveWinner = (roomId, callback) => {
     });
 }
 
+const getWinner = (roomId, callback) => {
+  console.log('GETTING WINNER FOR: ', roomId);
+  db.models.Room
+    .findOne({
+      where: {uniqueid: roomId},
+      attributes: ['winningrestaurant']
+    })
+    .then((res) => {
+      callback(res.dataValues.winningrestaurant);
+    })
+    .catch((err) => {
+      console.log('Error Fetching Winner: ', err);
+    })
+}
+
 module.exports = {
   saveMember,
   saveRoomAndMembers,
@@ -340,5 +355,6 @@ module.exports = {
   saveMessage,
   getMessages,
   getRooms,
-  saveWinner
+  saveWinner,
+  getWinner
 };

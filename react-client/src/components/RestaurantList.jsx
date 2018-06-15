@@ -47,6 +47,7 @@ class RestaurantList extends React.Component {
     // console.log('Render restaurant list called')
     return (
       <div>
+        <p className="title">Local Restaurants</p>
         {this.state.restaurants.map(restaurant => {
           return <RestaurantListItem restaurant={restaurant} nominate={this.props.nominate} key={restaurant.id}/>;
         })}

@@ -2,6 +2,7 @@ import React from 'react';
 import LoginDialog from './AuthUserMenu/LoginDialog.jsx';
 import SubscribeDialog from './AuthUserMenu/SubscribeDialog.jsx';
 import UserMenu from './AuthUserMenu/UserMenu.jsx';
+import { Link } from 'react-router-dom';
 
 class Navbar extends React.Component {
   constructor(props) {
@@ -29,7 +30,7 @@ class Navbar extends React.Component {
     return (
       <nav className="navbar is-transparent">
         <div className="navbar-brand">
-          <a className='title' href='/'><h1 id="logo">FoodFighter!</h1></a>
+          <a className='title' href='/'><Link to={`/`} style={{ textDecoration: 'none' }}><h1 id="logo">FoodFighter!</h1></Link></a>
         </div>
 
         <div className="navbar-end">

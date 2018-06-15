@@ -90,6 +90,7 @@ class Room extends React.Component {
     this.getTimer();
     this.getVotes();
     this.socket.emit('join', this.roomID);
+    this.getWinner();
   }
 
   getMessages() {
@@ -111,6 +112,19 @@ class Room extends React.Component {
     });
   }
 
+  getWinner(){
+    $.get(`/api/getWinner/${this.roomID}`).then(winner => {
+      console.log('WINNER: ', winner);
+      $.post('/api/search/restaurant', {
+        restId: winner
+      }).then((winner) => {
+        this.setState({
+          winner: winner
+        })
+      })
+    });
+  }
+
   getTimer() {
     $.get(`/api/timer/${this.roomID}`).then(timer => {
       let tock = new Tock({
@@ -128,16 +142,7 @@ class Room extends React.Component {
           })
         },
         complete: () => {
-          $.get(`/api/getWinner/${this.roomID}`).then(winner => {
-            console.log('WINNER: ', winner);
-            $.post('/api/search/restaurant', {
-              restId: winner
-            }).then((winner) => {
-              this.setState({
-                winner: winner
-              })
-            })
-          });
+          this.getWinner();
         }
       });
       console.log('STARTING TIMER');

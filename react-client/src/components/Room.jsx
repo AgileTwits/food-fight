@@ -4,6 +4,8 @@ import $ from 'jquery';
 import Tock from 'tocktimer';
 import RestaurantList from './RestaurantList.jsx';
 import CurrentSelection from './CurrentSelection.jsx';
+import sizeMe from 'react-sizeme'
+import Confetti from 'react-confetti'
 
 class Room extends React.Component {
   constructor(props) {
@@ -278,6 +280,9 @@ class Room extends React.Component {
   }
 
   render() {
+    // get size for confetti
+    const { width, height } = this.props.size
+
     let restaurantList = this.state.zipcode ? (
       <RestaurantList zipcode={this.state.zipcode} nominate={this.nominateRestaurant} currentName={this.currentSelectionName}/>
     ) : (
@@ -290,6 +295,10 @@ class Room extends React.Component {
       );
     return (
       <div>
+        {this.state.winner.id ?
+        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+          <Confetti width={width} height={height} />
+        </div> : ''}
         <section className="hero is-primary">
           <div className="hero-body">
             <div className="container">
@@ -405,4 +414,9 @@ class Room extends React.Component {
     );
   }
 }
-export default Room;
+
+// Create size config
+const config = { monitorHeight: true }
+// Call SizeMe with the config to get back the HOC.
+const sizeMeHOC = sizeMe(config)
+export default sizeMeHOC(Room)

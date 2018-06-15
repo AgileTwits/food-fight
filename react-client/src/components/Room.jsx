@@ -307,7 +307,21 @@ class Room extends React.Component {
                 <article className="tile is-child notification">
                   <div id="yelp-list">
                     {this.state.winner.id ? 
-                    <div>Winner</div> :
+                    <div>
+                      <div className="title has-text-centered">
+                        Your Winner:
+                        <p><a href={this.state.winner.url} target="_blank">{this.state.winner.name}</a></p>
+                      </div>
+                      <div className="media-content">
+                        <p className="image is-square">
+                          <img src={this.state.winner.image_url} className="restaurant-img hidden" />
+                        </p>
+                        <p className="title is-3 is-marginless">Address:</p>
+                        {this.state.winner.location.display_address.map((line) => {
+                          return <p className="subtitle is-5 is-marginless">{line}</p>
+                        })}
+                      </div>
+                    </div> :
                     restaurantList}
                   </div>
                 </article>

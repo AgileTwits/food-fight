@@ -39,6 +39,18 @@ class Room extends React.Component {
     this.socket = io({transports: ['websocket']});
     // SERIOUSLY NEED ABOVE FOR DEPLOYMENT
     //DO NOT NEED TO SPECIFY PORT ON CLIENT SIDE
+    
+  }
+
+  /// Send post request to server to fetch room info when user visits link
+  componentDidMount() {
+    this.retrieveCurrentRestaurant();
+    this.getMessages();
+    this.getRoomInfo();
+    this.getTimer();
+    this.getVotes();
+    this.socket.emit('join', this.roomID);
+    this.getWinner();
     this.socket.on('chat', message => {
       if (message.roomID === this.roomID) {
         console.log('Received message', message);
@@ -80,17 +92,6 @@ class Room extends React.Component {
         }
       }
     })
-  }
-
-  /// Send post request to server to fetch room info when user visits link
-  componentDidMount() {
-    this.retrieveCurrentRestaurant();
-    this.getMessages();
-    this.getRoomInfo();
-    this.getTimer();
-    this.getVotes();
-    this.socket.emit('join', this.roomID);
-    this.getWinner();
   }
 
   retrieveCurrentRestaurant() {

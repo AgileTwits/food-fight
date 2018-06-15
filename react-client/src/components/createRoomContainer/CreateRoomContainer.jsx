@@ -38,7 +38,8 @@ class CreateRoomContainer extends React.Component {
               searchUsers={this.props.searchUsers}
               foundUsers={this.props.searchedUsers}
               addCombatant={this.addCombatant.bind(this)} />
-            <UserRooms />
+            <UserRooms 
+              userRooms={this.props.userRooms}/>
         </div>
         <div className="tile is-parent is-vertical is-8">
           <article className="tile is-child notification create-room-container">

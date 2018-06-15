@@ -156,6 +156,7 @@ class Room extends React.Component {
           roomID: this.roomID,
           restaurantID: restaurant.id,
         };
+        console.log('vote', voteObj)
         let nomObj = {
           restaurant: restaurant,
           roomID: this.roomID,

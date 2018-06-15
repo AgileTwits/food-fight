@@ -23,7 +23,8 @@ class App extends React.Component {
       loggedInUsername: '',
       loginError: false,
 
-      searchedUsers: []
+      searchedUsers: [],
+      userRooms: [],
     };
   }
 
@@ -37,6 +38,7 @@ class App extends React.Component {
             loggedInUsername: res.data.user.email,
             loginError: false,
           });
+          this.getUserRooms(res.data.user.email);
         }
       });
   }
@@ -67,6 +69,15 @@ class App extends React.Component {
           searchedUsers: res.data
         });
       });
+  }
+
+  getUserRooms(email) {
+    axios.post('/api/userrooms', {username: email})
+    .then(res => {
+      this.setState({
+        userRooms: res.data
+      })
+    })
   }
 
   //
@@ -104,6 +115,7 @@ class App extends React.Component {
       .then(res => {
         if (res.config.data) {
           console.log('Logged in as:', JSON.parse(res.config.data).email);
+          this.getUserRooms(JSON.parse(res.config.data).email);
           this.setState({
             loggedIn: true,
             loggedInUsername: JSON.parse(res.config.data).email
@@ -157,6 +169,7 @@ class App extends React.Component {
               searchedUsers={this.state.searchedUsers}
               loggedIn={this.state.loggedIn}
               loggedInUser={this.state.loggedInUsername}
+              userRooms={this.state.userRooms}
               {...props} />} />
           <Route path="/signup" render={
             (props) => <SignupPage

@@ -13,6 +13,7 @@ class LoginDialog extends React.Component {
     this.handleLogin = this.handleLogin.bind(this);
     this.enterEmail = this.enterEmail.bind(this);
     this.enterPassword = this.enterPassword.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
   }
 
 
@@ -47,6 +48,12 @@ class LoginDialog extends React.Component {
 
   handleLogin() {
     this.props.login(this.state.email, this.state.password);
+  }
+
+  handleKeyPress(event) {
+    if (event.key == 'Enter') {
+      this.handleLogin();
+    }
   }
 
 
@@ -107,7 +114,9 @@ class LoginDialog extends React.Component {
                     type="email"
                     placeholder="johndoe@gmail.com"
                     value={this.state.email}
-                    onChange={this.enterEmail} />
+                    onChange={this.enterEmail}
+                    onKeyPress={this.handleKeyPress}
+                    />
                   <span className="icon is-small is-left">
                     <i className="fas fa-envelope"></i>
                   </span>
@@ -122,6 +131,7 @@ class LoginDialog extends React.Component {
                     placeholder="password123"
                     value={this.state.password}
                     onChange={this.enterPassword}
+                    onKeyPress={this.handleKeyPress}
                   />
                   <span className="icon is-small is-left">
                     <i className="fas fa-lock"></i>

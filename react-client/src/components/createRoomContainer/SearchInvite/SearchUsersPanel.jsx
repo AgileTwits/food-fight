@@ -33,28 +33,32 @@ class SearchUsersPanel extends React.Component {
     return (
       <article className="tile is-child notification">
         <div className="content">
-          <p className="title">Find Fighters</p>
-          <div className="content">
-            <div className="field has-addons">
-              <div className="control is-expanded">
-                <input
-                  type="email"
-                  className="input"
-                  placeholder="Email"
-                  value={this.state.query}
-                  onChange={this.enterQuery} />
-              </div>
-              <div className="control">
-                <a
-                  className="button is-info"
-                  onClick={this.props.searchUsers.bind(this, this.state.query)}>
-                  Search
-                </a>
+          <div className="section">
+            <p className="title">Find Fighters</p>
+            <div className="content">
+              <div className="field has-addons">
+                <div className="control is-expanded">
+                  <input
+                    type="email"
+                    className="input"
+                    placeholder="Email"
+                    value={this.state.query}
+                    onChange={this.enterQuery} />
+                </div>
+                <div className="control">
+                  <a
+                    className="button is-info"
+                    onClick={this.props.searchUsers.bind(this, this.state.query)}>
+                    Search
+                  </a>
+                </div>
               </div>
             </div>
             <div>
               {usersFound}
             </div>
+          </div>
+          <div className="section">
             <div id="invite-users-footer" className="is-fullwidth">
               <div className="is-divider"></div>
               <InviteUsers />

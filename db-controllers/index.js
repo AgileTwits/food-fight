@@ -225,7 +225,7 @@ const updateVotes = (voter, restaurant_id, name, roomId, callback) => {
   });
   
   // Update query in case voter already vetoed. (Can't insert upvote if veto already exists for user for room)
-  const sqlUpdateQuery = `UPDATE votes SET upvoted = true WHERE restaurant_id = '${restaurant_id}' AND roomuniqueid = '${roomId}' AND useremail = '${voter}';`
+  const sqlUpdateQuery = `UPDATE votes SET upvoted = true WHERE restaurant_id = '${restaurant_id}' AND roomuniqueid = '${roomId}' AND useremail = '${voter}';`;
   db.sequelize.query(sqlUpdateQuery).spread((results) => {
     console.log('UPDATE VOTE', results);
   });
@@ -303,6 +303,7 @@ const getScoreboard = (roomID, callback) => {
 };
 
 const saveWinner = (roomId, callback) => {
+  console.log('SAVING WINNER FOR: ', roomId);
   db.models.Vote
     .findAll({
       where: {roomuniqueid: roomId},
@@ -315,15 +316,15 @@ const saveWinner = (roomId, callback) => {
       let restId = res[0].dataValues.restaurant_id;
       db.models.Room
         .update({
-          winningRestaurant: restId
+          winningrestaurant: restId
         }, {
           where: {uniqueid: roomId},
           returning: true,
           plain: true
         })
     })
-    .then((num, room) => {
-      
+    .catch((err) => {
+      console.log('Error Saving Winner');
     });
 }
 

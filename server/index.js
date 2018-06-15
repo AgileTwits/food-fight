@@ -170,9 +170,12 @@ app.post('/api/save', (req, res) => {
   let roomUnique = uniqueString();
   timerObj[roomUnique] = new tock({
     countdown: true,
-    complete: dbHelpers.saveWinner(roomUnique)
+    complete: () => {
+      console.log('TIMER OVER');
+      dbHelpers.saveWinner(roomUnique)
+    }
   });
-  timerObj[roomUnique].start(300000);
+  timerObj[roomUnique].start(60000);
 
   dbHelpers.saveRoomAndMembers(roomName, zip, members, roomUnique, (err, room, users) => {
     if (err) {

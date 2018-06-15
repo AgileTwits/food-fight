@@ -23,7 +23,8 @@ class Room extends React.Component {
       // The hasVoted functionality has not yet been implemented
       hasVoted: false,
     };
-
+    //remove
+    console.log('JOSEPH', process.env.PORT);
     this.roomID = this.props.match.params.roomID;
 
     this.nominateRestaurant = this.nominateRestaurant.bind(this);
@@ -32,7 +33,10 @@ class Room extends React.Component {
     this.voteVeto = this.voteVeto.bind(this);
 
     // Client-side socket events
-    this.socket = io.connect(process.env.PORT || 'http://localhost:3000');
+    // NEED THIS TO WORK ON DEPLOYMENT
+    this.socket = io({transports: ['websocket']});
+    // SERIOUSLY NEED ABOVE FOR DEPLOYMENT
+    //DO NOT NEED TO SPECIFY PORT ON CLIENT SIDE
     this.socket.on('chat', message => {
       if (message.roomID === this.roomID) {
         console.log('Received message', message);
@@ -76,7 +80,7 @@ class Room extends React.Component {
     })
   }
 
-  // Send post request to server to fetch room info when user visits link
+  /// Send post request to server to fetch room info when user visits link
   componentDidMount() {
     this.getMessages();
     this.getRoomInfo();

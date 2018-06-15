@@ -76,7 +76,7 @@ class Room extends React.Component {
     })
   }
 
-  // Send post request to server to fetch room info when user visits link
+  /// Send post request to server to fetch room info when user visits link
   componentDidMount() {
     this.getMessages();
     this.getRoomInfo();

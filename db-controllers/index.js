@@ -189,6 +189,14 @@ const saveCurrentRestaurant = (roomID, restaurantID, callback) => {
   });
 };
 
+const getCurrentRestaurant = (roomID, callback) => {
+  const sqlQuery = `SELECT currentrestaurant FROM rooms WHERE uniqueid = '${roomID}'`
+  db.sequelize.query(sqlQuery).spread((results) => {
+    console.log('GET VOTES', results);
+    callback(null, results);
+  });
+};
+
 const updateVotes = (voter, restaurant_id, name, roomId, callback) => {
   db.models.Restaurant.findOne({
     where: {
@@ -334,6 +342,7 @@ module.exports = {
   getRoomMembers,
   saveRestaurant,
   saveCurrentRestaurant,
+  getCurrentRestaurant,
   updateVotes,
   updateVetoes,
   getScoreboard,

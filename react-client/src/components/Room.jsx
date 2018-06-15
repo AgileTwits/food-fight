@@ -31,6 +31,7 @@ class Room extends React.Component {
     this.sendMessage = this.sendMessage.bind(this);
     this.voteApprove = this.voteApprove.bind(this);
     this.voteVeto = this.voteVeto.bind(this);
+    this.retrieveCurrentRestaurant = this.retrieveCurrentRestaurant.bind(this);
 
     // Client-side socket events
     // NEED THIS TO WORK ON DEPLOYMENT
@@ -82,11 +83,30 @@ class Room extends React.Component {
 
   /// Send post request to server to fetch room info when user visits link
   componentDidMount() {
+    this.retrieveCurrentRestaurant();
     this.getMessages();
     this.getRoomInfo();
     this.getTimer();
     this.getVotes();
     this.socket.emit('join', this.roomID);
+  }
+
+  retrieveCurrentRestaurant() {
+    let roomIDObj = {
+      roomID: this.roomID
+    }
+    $.post('/api/currentrestaurant', roomIDObj).then((restaurant) => {
+      let restaurantObj = {
+        image_url: '',
+        name: 'hi',
+        categories: ['a','b','c']
+      }
+      this.setState({
+        currentSelection: restaurantObj,
+      });
+      console.log('asdSDFSDFDSFf',restaurantObj)
+      console.log('RESTSTST',restaurant[0].currentrestaurant)
+    });
   }
 
   getMessages() {
@@ -149,6 +169,7 @@ class Room extends React.Component {
 
   // Activated on click of RestaurantListItem component
   nominateRestaurant(restaurant, reloading = false) {
+    console.log('hey joseph nominate', restaurant)
     if (this.state.isNominating) {
       this.setState({
         currentSelection: restaurant,
@@ -173,6 +194,7 @@ class Room extends React.Component {
       // Socket is not refreshing table for some reason but still sends vote
       this.voteApprove(restaurant.name, restaurant.id);
     }
+    setTimeout(() => console.log('NOMINATE SEL',this.state.currentSelection), 2000)
   }
 
   sendMessage() {

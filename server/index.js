@@ -286,12 +286,24 @@ app.post('/api/nominate', (req, res) => {
     }
   });
   //Joseph SQL
-  console.log('HEYY', roomID, restaurantID)
   dbHelpers.saveCurrentRestaurant(roomID, restaurantID, (err, restaurant) => {
     if (err) {
       console.log('Error saving current restaurant', err);
     } else {
       res.end('Current restaurant saved!', restaurant);
+    }
+  });
+
+});
+
+app.post('/api/currentrestaurant', (req, res) => {
+  const { roomID } = req.body;
+  //Joseph SQL
+  dbHelpers.getCurrentRestaurant(roomID, (err, restaurant) => {
+    if (err) {
+      console.log('Error retrieving current restaurant', err);
+    } else {
+      res.send(restaurant);
     }
   });
 

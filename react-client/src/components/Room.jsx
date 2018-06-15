@@ -24,7 +24,7 @@ class Room extends React.Component {
       hasVoted: false,
     };
     //remove
-    console.log(process.env.PORT);
+    console.log('JOSEPH', process.env.PORT);
     this.roomID = this.props.match.params.roomID;
 
     this.nominateRestaurant = this.nominateRestaurant.bind(this);

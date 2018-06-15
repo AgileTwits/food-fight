@@ -154,8 +154,8 @@ class Room extends React.Component {
         let voteObj = {
           name: restaurant.name,
           roomID: this.roomID,
+          restaurantID: restaurant.id,
         };
-        console.log('vote', voteObj)
         let nomObj = {
           restaurant: restaurant,
           roomID: this.roomID,

@@ -182,8 +182,8 @@ const saveRestaurant = (name, roomID, callback) => {
     });
 };
 
-const saveCurrentRestaurant = (name, roomID, callback) => {
-  const sqlQuery = `INSERT INTO votes (restaurant_id, roomuniqueid, useremail, name, upvoted, created, updated) VALUES ('${restaurant_id}', '${roomId}', '${voter}', '${strippedName}', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);`;
+const saveCurrentRestaurant = (roomID, restaurantID, callback) => {
+  const sqlQuery = `UPDATE rooms SET currentrestaurant = '${restaurantID}' WHERE uniqueid = '${roomID}';`;
   db.sequelize.query(sqlQuery).spread((results) => {
     console.log('AAAAAAAAAAAAAAA', results[0]);
   });
@@ -332,6 +332,7 @@ module.exports = {
   saveRoomAndMembers,
   getRoomMembers,
   saveRestaurant,
+  saveCurrentRestaurant,
   updateVotes,
   updateVetoes,
   getScoreboard,

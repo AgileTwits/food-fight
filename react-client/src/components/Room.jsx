@@ -33,7 +33,8 @@ class Room extends React.Component {
     this.voteVeto = this.voteVeto.bind(this);
 
     // Client-side socket events
-    this.socket = io.connect(process.env.PORT || 'http://localhost:3000');
+    // this.socket = io.connect(process.env.PORT || 'http://localhost:3000');
+    this.socket = io({transports: ['websocket']});
     this.socket.on('chat', message => {
       if (message.roomID === this.roomID) {
         console.log('Received message', message);

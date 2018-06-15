@@ -30,6 +30,7 @@ class MainView extends React.Component {
             searchedUsers={this.props.searchedUsers}
             loggedIn={this.props.loggedIn}
             loggedInUser={this.props.loggedInUser}
+            userRooms={this.props.userRooms}
             {...props} />} />,
         < Route path="/rooms/:roomID" render={
           <Room username={this.state.loggedInUser} />

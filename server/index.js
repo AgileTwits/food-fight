@@ -226,6 +226,17 @@ app.post('/api/userrooms', (req, res) => {
   });
 });
 
+app.post('/api/userwins', (req, res) => {
+  const { username } = req.body;
+  dbHelpers.getWins(username, (err, wins) => {
+    if (err) {
+      console.log('Error getting wins', err);
+    } else {
+      res.send(wins);
+    }
+  })
+})
+
 app.get('/api/getWinner/:roomID', (req, res) => {
   const { roomID } = req.params;
   dbHelpers.getWinner(roomID, (response) => {

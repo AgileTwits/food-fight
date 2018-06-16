@@ -18,7 +18,7 @@ class Room extends React.Component {
       zipcode: undefined,
       currentSelection: undefined,
       currentSelectionName: undefined,
-      isNominating: true,
+      isNominating: false,
       votes: [],
       roomName: '',
       timer: '',
@@ -103,7 +103,6 @@ class Room extends React.Component {
       }).then((current) => {
         console.log('Mounting Restaurant', current);
         if ('error' in current === false) {
-          console.log('has error');
           this.setState({
             currentSelection: current,
             isNominating: false,

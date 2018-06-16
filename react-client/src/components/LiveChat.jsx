@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 
 class LiveChat extends React.Component {
     constructor(props) {
@@ -23,7 +24,10 @@ class LiveChat extends React.Component {
     }
     
     scrollToBottom () {
-      this.messagesEnd.scrollIntoView({ behavior: "auto", block: "nearest"});
+      const scrollHeight = this.messageList.scrollHeight;
+      const height = this.messageList.clientHeight;
+      const maxScrollTop = scrollHeight - height;
+      ReactDOM.findDOMNode(this.messageList).scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
     }
 
     handleKeyPress(event) {
@@ -47,7 +51,7 @@ class LiveChat extends React.Component {
       return (
         <div id="chat">
           <h4 className="is-size-4">{this.props.roomName} Chatroom</h4>
-          <div className="chat-messages">
+          <div className="chat-messages" ref={(el) => { this.messageList = el;}}>
                 {this.props.messages.map(message => {
                     if(this.props.username === message.name) {
                       return (<div className="section" style={{ textAlign: "right", backgroundColor: "#ffe6e6", borderTop: "1px solid black", padding: "5px" }}><p>{message.message}</p></div>)
@@ -55,9 +59,6 @@ class LiveChat extends React.Component {
                       return (<div className="section" style={{ textAlign: "left", backgroundColor: "#f0f5f5", borderTop: "1px solid black", padding: "5px" }}><p><strong>{message.name}:</strong>{message.message}</p></div>)
                     }
                 })}
-                <div style={{ float:"left", clear: "both" }}
-                    ref={(el) => { this.messagesEnd = el; }}>
-                </div>
             </div> 
           <div>
             <span>

@@ -22,6 +22,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    nominator: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     upvoted: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

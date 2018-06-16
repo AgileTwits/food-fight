@@ -20,8 +20,10 @@ class Room extends React.Component {
       currentSelectionName: undefined,
       isNominating: true,
       votes: [],
+      vetoedRestaurants: [],
       roomName: '',
       timer: '',
+      nominateTimer: undefined,
       winner: {},
       // The hasVoted functionality has not yet been implemented
       hasVoted: false,
@@ -68,8 +70,11 @@ class Room extends React.Component {
         this.setState({
           currentSelection: nominee.restaurant,
           hasVoted: false,
+          isNominating: false,
         });
       }
+      this.getNominateTimer();
+      this.getVotes();
     });
 
     this.socket.on('join', roomID => {
@@ -88,6 +93,7 @@ class Room extends React.Component {
     this.getMessages();
     this.getRoomInfo();
     this.getTimer();
+    this.getNominateTimer();
     this.getVotes();
     this.socket.emit('join', this.roomID);
     this.getWinner();
@@ -165,6 +171,33 @@ class Room extends React.Component {
           this.getWinner();
         }
       });
+      // console.log('STARTING TIMER');
+      tock.start(timer.timeLeft + 1000);
+    });
+  }
+
+  getNominateTimer() {
+    $.get(`/api/nominatetimer/${this.roomID}`).then(timer => {
+      let tock = new Tock({
+        countdown: true,
+        interval: 100,
+        callback: () => {
+          let time = tock.lap()
+          let seconds = (Math.floor((time / 1000) % 60));
+          let minutes = (Math.floor((time / (60000)) % 60));
+          seconds = (seconds < 10) ? "0" + seconds : seconds;
+          minutes = (minutes < 10) ? "0" + minutes : minutes;
+
+          this.setState({
+            nominateTimer: minutes + ':' + seconds
+          })
+        },
+        complete: () => {
+          this.setState({
+            nominateTimer: undefined,
+          })
+        }
+      });
       console.log('STARTING TIMER');
       tock.start(timer.timeLeft + 1000);
     });
@@ -172,9 +205,20 @@ class Room extends React.Component {
 
   getVotes() {
     $.get(`/api/votes/${this.roomID}`).then(restaurants => {
+      let vetoedRests = this.state.vetoedRestaurants;
+      for (let restaurant of restaurants) {
+        console.log('THIS IS VETOED', restaurant)
+        if (restaurant.vetoed === true) {
+          vetoedRests.push(restaurant.restaurant_id);
+        }
+      }
+      console.log('hey vetoed!!', vetoedRests)
+
       this.setState({
         votes: restaurants,
+        vetoedRestaurants: vetoedRests,
       });
+
       if (restaurants.length && !this.state.currentSelection) {
         restaurants.forEach(restaurant => {
           if (!restaurant.vetoed) {
@@ -218,7 +262,7 @@ class Room extends React.Component {
   }
 
   sendMessage() {
-    console.log(this.props.username)
+    console.log('NOMINATE TIMER', this.state.nominateTimer);
     let messageObj = {
       message: {
         name: this.props.username || this.state.name,
@@ -262,25 +306,27 @@ class Room extends React.Component {
   }
 
   voteVeto() {
-    let resId = this.state.currentSelection.id;
-    this.setState({
-      isNominating: true,
-    });
-    if (this.state.currentSelection) {
-      let voteObj = {
-        voter: this.props.username,
-        restaurant_id: resId,
-        name: this.state.currentSelection.name,
-        roomID: this.roomID,
-      };
-      console.log('INSIDE', voteObj)
-      $.post('/api/vetoes', voteObj).then(() => {
-        this.setState({
-          currentSelection: undefined,
-          hasVoted: true,
-        });
-        this.socket.emit('veto', voteObj);
+    if (!this.state.nominateTimer) {
+      let resId = this.state.currentSelection.id;
+      this.setState({
+        isNominating: true,
       });
+      if (this.state.currentSelection) {
+        let voteObj = {
+          voter: this.props.username,
+          restaurant_id: resId,
+          name: this.state.currentSelection.name,
+          roomID: this.roomID,
+        };
+        console.log('INSIDE', voteObj)
+        $.post('/api/vetoes', voteObj).then(() => {
+          this.setState({
+            currentSelection: undefined,
+            hasVoted: true,
+          });
+          this.socket.emit('veto', voteObj);
+        });
+      }
     }
   }
 
@@ -289,7 +335,7 @@ class Room extends React.Component {
     const { width, height } = this.props.size
 
     let restaurantList = this.state.zipcode ? (
-      <RestaurantList zipcode={this.state.zipcode} nominate={this.nominateRestaurant} currentName={this.currentSelectionName}/>
+      <RestaurantList vetoedRestaurants={this.state.vetoedRestaurants} zipcode={this.state.zipcode} nominate={this.nominateRestaurant} currentName={this.currentSelectionName}/>
     ) : (
         ''
       );

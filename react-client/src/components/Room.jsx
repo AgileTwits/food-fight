@@ -401,6 +401,8 @@ class Room extends React.Component {
                   <article className="tile is-child notification">
                   <div id="current-restaurant">
                     <p className="title">Time Remaining: {this.state.timer}</p>
+                    {this.state.nominateTimer ? 
+                    <p className="title">Time Until Veto: {this.state.nominateTimer}</p> : <div><br></br><br></br></div>}
                     <p className="title">Current Selection</p>
                     {currentSelection}
                     <button onClick={() => this.voteApprove()} className="button is-success">

@@ -199,7 +199,7 @@ const getCurrentRestaurant = (roomID, callback) => {
   });
 };
 
-const updateVotes = (voter, restaurant_id, name, roomId, callback) => {
+const updateVotes = (voter, restaurant_id, name, roomId, nominator, callback) => {
   db.models.Restaurant.findOne({
     where: {
       name,
@@ -229,7 +229,7 @@ const updateVotes = (voter, restaurant_id, name, roomId, callback) => {
 
   // Joseph using SQL to update votes table
   const strippedName = name.replace("'", '`');
-  const sqlQuery = `INSERT INTO votes (restaurant_id, roomuniqueid, useremail, name, upvoted, created, updated) VALUES ('${restaurant_id}', '${roomId}', '${voter}', '${strippedName}', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);`;
+  const sqlQuery = `INSERT INTO votes (restaurant_id, roomuniqueid, useremail, name, upvoted, created, updated, nominator) VALUES ('${restaurant_id}', '${roomId}', '${voter}', '${strippedName}', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '${nominator}');`;
   db.sequelize.query(sqlQuery).spread((results) => {
     console.log('AAAAAAAAAAAAAAA', results[0]);
   });
@@ -324,18 +324,43 @@ const getScoreboard = (roomID, callback) => {
   });
 };
 
+const addWin = (rest, room) => {
+  db.models.Vote
+    .findOne({
+      where: {
+        roomuniqueid: room,
+        restaurant_id: rest
+      },
+      attributes: ['nominator']
+    })
+    .then((res) => {
+      console.log('ADDING WIN FOR: ', res.dataValues.nominator);
+      let nom = res.dataValues.nominator;
+      db.models.User
+        .increment(
+          'wins', {
+            where: {email: nom} 
+        });
+    })
+    .catch((err) => {
+      console.log('Error incrementing wins: ', err);
+    })
+}
+
 const saveWinner = (roomId, callback) => {
   console.log('SAVING WINNER FOR: ', roomId);
   db.models.Vote
     .findAll({
       where: {roomuniqueid: roomId},
-      attributes: ['restaurant_id',
+      attributes: ['restaurant_id', 'roomuniqueid',
         [sequelize.fn('count', sequelize.col('upvoted')), 'votes']],
-      group: ['restaurant_id'],
+      group: ['restaurant_id', 'roomuniqueid'],
       order: [['count', 'DESC']]
     })
     .then((res) => {
       let restId = res[0].dataValues.restaurant_id;
+      let roomId = res[0].dataValues.roomuniqueid;
+      addWin(restId, roomId);
       db.models.Room
         .update({
           winningrestaurant: restId
@@ -346,9 +371,9 @@ const saveWinner = (roomId, callback) => {
         })
     })
     .catch((err) => {
-      console.log('Error Saving Winner');
+      console.log('Error Saving Winner', err);
     });
-}
+};
 
 const getWinner = (roomId, callback) => {
   console.log('GETTING WINNER FOR: ', roomId);
@@ -363,7 +388,7 @@ const getWinner = (roomId, callback) => {
     .catch((err) => {
       console.log('Error Fetching Winner: ', err);
     })
-}
+};
 
 module.exports = {
   saveMember,

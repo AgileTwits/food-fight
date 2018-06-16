@@ -2,6 +2,7 @@
 @import 'helpers';
 @import url("https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
 @import url('https://fonts.googleapis.com/css?family=Kalam:700');
+@import url('https://fonts.googleapis.com/css?family=Iceberg');
 // Import the initial variables
 
 // @import "../../../node_modules/bulma/sass/utilities/initial-variables";
@@ -134,6 +135,10 @@ div.columns {
 
 .subtitle {
   color: white;
+}
+
+.timer {
+  font-family: 'Iceberg', sans-serif;
 }
 
 .search-result {

@@ -200,7 +200,7 @@ class Room extends React.Component {
         }
       });
       console.log('STARTING TIMER');
-      tock.start(timer.timeLeft + 1000);
+      tock.start(timer.timeLeft);
     });
   }
 
@@ -415,7 +415,7 @@ class Room extends React.Component {
                   <div id="current-restaurant">
                     <p className="title">Time Remaining: <span className="timer">{this.state.timer}</span></p>
                     {this.state.nominateTimer ? 
-                    <p className="title">Time Until Veto: <span className="timer">{this.state.nominateTimer}</span></p> : <div><br></br><br></br></div>}
+                    <p className="title">Time Until Nomination: <span className="timer">{this.state.nominateTimer}</span></p> : <div><br></br><br></br></div>}
                     <p className="title">Current Selection</p>
                     {currentSelection}
                     <button onClick={() => this.voteApprove()} className="button is-success">

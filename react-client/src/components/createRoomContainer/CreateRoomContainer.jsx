@@ -25,9 +25,11 @@ class CreateRoomContainer extends React.Component {
   }
 
   addCombatant(email) {
-    this.setState({
-      combatants: [...this.state.combatants, email]
-    });
+    if (!this.state.combatants.includes(email)) {
+      this.setState({
+        combatants: [...this.state.combatants, email]
+      });
+    }
   }
 
   render() {

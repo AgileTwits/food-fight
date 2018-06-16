@@ -172,7 +172,7 @@ app.post('/api/save', (req, res) => {
     countdown: true,
     complete: () => {
       console.log('TIMER OVER');
-      dbHelpers.saveWinner(roomUnique)
+      dbHelpers.saveWinner(roomUnique);
     }
   });
   timerObj[roomUnique].start(60000);
@@ -204,6 +204,11 @@ app.get('/api/timer/:roomID', (req, res) => {
   res.send({timeLeft: timerObj[roomID].lap()});
 });
 
+app.get('/api/nominatetimer/:roomID', (req, res) => {
+  const { roomID } = req.params;
+  res.send({timeLeft: nominateTimerObj[roomID].lap()});
+});
+
 app.post('/room-redirect', (req, res) => {
   console.log(req.body);
   res.redirect(307, `/rooms/${req.body.id}`);
@@ -223,7 +228,10 @@ app.post('/api/userrooms', (req, res) => {
 
 app.get('/api/getWinner/:roomID', (req, res) => {
   const { roomID } = req.params;
-  dbHelpers.getWinner(roomID, (response) => {res.send(response)})
+  dbHelpers.getWinner(roomID, (response) => {
+    console.log('WINNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNER',response)
+    /res.send(response)
+  })
 });
 
 
@@ -277,6 +285,7 @@ app.post('/api/search/restaurant', (req, res) => {
 //
 app.post('/api/messages', (req, res) => {
   const {user_id, message, roomID } = req.body;
+  console.log('NOMIIIIIIINNNNNNNNNNNATION TIMER', nominateTimerObj);
   dbHelpers.saveMessage(user_id, message.name, message.message, roomID, (err, savedMessage) => {
     if (err) {
       console.log('Error saving message', err);
@@ -302,6 +311,17 @@ app.get('/api/messages/:roomID', (req, res) => {
 
 app.post('/api/nominate', (req, res) => {
   const { name, roomID, restaurantID } = req.body;
+  //Timer for nominations
+  nominateTimerObj[roomID] = new tock({
+    countdown: true,
+    complete: () => {
+      console.log('TIMER OVER');
+    }
+  });
+  nominateTimerObj[roomID].start(15000);
+
+  console.log('NOMIIIIIIINNNNNNNNNNNATION TIMER', nominateTimerObj[roomID]);
+  
   dbHelpers.saveRestaurant(name, roomID, (err, restaurant) => {
     if (err) {
       console.log('Error saving restaurant', err);
@@ -309,8 +329,8 @@ app.post('/api/nominate', (req, res) => {
       res.end('Restaurant saved!', restaurant);
     }
   });
+
   //Joseph SQL
-  console.log('HEYY', roomID, restaurantID)
   dbHelpers.saveCurrentRestaurant(roomID, restaurantID, (err, restaurant) => {
     if (err) {
       console.log('Error saving current restaurant', err);
@@ -318,12 +338,24 @@ app.post('/api/nominate', (req, res) => {
       res.end('Current restaurant saved!', restaurant);
     }
   });
+});
+
+app.post('/api/currentrestaurant', (req, res) => {
+  const { roomID } = req.body;
+  //Joseph SQL
+  dbHelpers.getCurrentRestaurant(roomID, (err, restaurant) => {
+    if (err) {
+      console.log('Error retrieving current restaurant', err);
+    } else {
+      res.send(restaurant);
+    }
+  });
 
 });
 
 app.post('/api/votes', (req, res) => {
-  const { name, roomID, voter, restaurant_id } = req.body;
-  dbHelpers.updateVotes(voter, restaurant_id, name, roomID, (err, restaurant) => {
+  const { name, roomID, voter, restaurant_id, nominator } = req.body;
+  dbHelpers.updateVotes(voter, restaurant_id, name, roomID, nominator, (err, restaurant) => {
     if (err) {
       console.log('Error upvoting restaurant', err);
     } else {
@@ -404,3 +436,4 @@ db.models.sequelize.sync().then(() => {
 });
 
 let timerObj = {};
+let nominateTimerObj = {};

@@ -6,7 +6,10 @@ import RestaurantList from './RestaurantList.jsx';
 import CurrentSelection from './CurrentSelection.jsx';
 import sizeMe from 'react-sizeme';
 import Confetti from 'react-confetti';
+<<<<<<< HEAD
 import LiveChat from './LiveChat.jsx';
+=======
+>>>>>>> 0965f7daf3e4632b29c32485e5387a6ac582b2ff
 
 class Room extends React.Component {
   constructor(props) {
@@ -21,20 +24,21 @@ class Room extends React.Component {
       currentSelectionName: undefined,
       isNominating: true,
       votes: [],
+      vetoedRestaurants: [],
       roomName: '',
       timer: '',
+      nominateTimer: undefined,
       winner: {},
       // The hasVoted functionality has not yet been implemented
       hasVoted: false,
     };
-    //remove
-    console.log('JOSEPH', process.env.PORT);
     this.roomID = this.props.match.params.roomID;
 
     this.nominateRestaurant = this.nominateRestaurant.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
     this.voteApprove = this.voteApprove.bind(this);
     this.voteVeto = this.voteVeto.bind(this);
+    this.retrieveCurrentRestaurant = this.retrieveCurrentRestaurant.bind(this);
 
     // Client-side socket events
     // NEED THIS TO WORK ON DEPLOYMENT
@@ -70,8 +74,11 @@ class Room extends React.Component {
         this.setState({
           currentSelection: nominee.restaurant,
           hasVoted: false,
+          isNominating: false,
         });
       }
+      this.getNominateTimer();
+      this.getVotes();
     });
 
     this.socket.on('join', roomID => {
@@ -86,11 +93,34 @@ class Room extends React.Component {
 
   /// Send post request to server to fetch room info when user visits link
   componentDidMount() {
+    this.retrieveCurrentRestaurant();
     this.getMessages();
     this.getRoomInfo();
     this.getTimer();
+    this.getNominateTimer();
     this.getVotes();
     this.socket.emit('join', this.roomID);
+    this.getWinner();
+  }
+
+  retrieveCurrentRestaurant() {
+    let roomIDObj = {
+      roomID: this.roomID
+    }
+    $.post('/api/currentrestaurant', roomIDObj).then((restaurant) => {
+      $.post('/api/search/restaurant', {
+        restId: restaurant[0].currentrestaurant
+      }).then((current) => {
+        console.log('Mounting Restaurant', current);
+        if ('error' in current === false) {
+          console.log('has error');
+          this.setState({
+            currentSelection: current,
+            isNominating: false,
+          });
+        }
+      });
+    });
   }
 
   getMessages() {
@@ -112,6 +142,19 @@ class Room extends React.Component {
     });
   }
 
+  getWinner(){
+    $.get(`/api/getWinner/${this.roomID}`).then(winner => {
+      console.log('WINNER: ', winner);
+      $.post('/api/search/restaurant', {
+        restId: winner
+      }).then((winner) => {
+        this.setState({
+          winner: winner
+        })
+      })
+    });
+  }
+
   getTimer() {
     $.get(`/api/timer/${this.roomID}`).then(timer => {
       let tock = new Tock({
@@ -129,16 +172,34 @@ class Room extends React.Component {
           })
         },
         complete: () => {
-          $.get(`/api/getWinner/${this.roomID}`).then(winner => {
-            console.log('WINNER: ', winner);
-            $.post('/api/search/restaurant', {
-              restId: winner
-            }).then((winner) => {
-              this.setState({
-                winner: winner
-              })
-            })
-          });
+          this.getWinner();
+        }
+      });
+      // console.log('STARTING TIMER');
+      tock.start(timer.timeLeft + 1000);
+    });
+  }
+
+  getNominateTimer() {
+    $.get(`/api/nominatetimer/${this.roomID}`).then(timer => {
+      let tock = new Tock({
+        countdown: true,
+        interval: 100,
+        callback: () => {
+          let time = tock.lap()
+          let seconds = (Math.floor((time / 1000) % 60));
+          let minutes = (Math.floor((time / (60000)) % 60));
+          seconds = (seconds < 10) ? "0" + seconds : seconds;
+          minutes = (minutes < 10) ? "0" + minutes : minutes;
+
+          this.setState({
+            nominateTimer: minutes + ':' + seconds
+          })
+        },
+        complete: () => {
+          this.setState({
+            nominateTimer: undefined,
+          })
         }
       });
       console.log('STARTING TIMER');
@@ -148,9 +209,20 @@ class Room extends React.Component {
 
   getVotes() {
     $.get(`/api/votes/${this.roomID}`).then(restaurants => {
+      let vetoedRests = this.state.vetoedRestaurants;
+      for (let restaurant of restaurants) {
+        console.log('THIS IS VETOED', restaurant)
+        if (restaurant.vetoed === true) {
+          vetoedRests.push(restaurant.restaurant_id);
+        }
+      }
+      console.log('hey vetoed!!', vetoedRests)
+
       this.setState({
         votes: restaurants,
+        vetoedRestaurants: vetoedRests,
       });
+
       if (restaurants.length && !this.state.currentSelection) {
         restaurants.forEach(restaurant => {
           if (!restaurant.vetoed) {
@@ -165,6 +237,7 @@ class Room extends React.Component {
 
   // Activated on click of RestaurantListItem component
   nominateRestaurant(restaurant, reloading = false) {
+    console.log('hey joseph nominate', restaurant)
     if (this.state.isNominating) {
       this.setState({
         currentSelection: restaurant,
@@ -187,12 +260,18 @@ class Room extends React.Component {
       }
       // A user who nominates a restaurant should automatically vote for it
       // Socket is not refreshing table for some reason but still sends vote
-      this.voteApprove(restaurant.name, restaurant.id);
+      this.voteApprove(restaurant.name, restaurant.id, this.props.username);
     }
+    setTimeout(() => console.log('NOMINATE SEL',this.state.currentSelection), 2000)
   }
 
+<<<<<<< HEAD
   sendMessage(msg) {
     console.log(this.props.username)
+=======
+  sendMessage() {
+    console.log('NOMINATE TIMER', this.state.nominateTimer);
+>>>>>>> 0965f7daf3e4632b29c32485e5387a6ac582b2ff
     let messageObj = {
       message: {
         name: this.props.username || this.state.name,
@@ -212,7 +291,17 @@ class Room extends React.Component {
     });
   }
 
+<<<<<<< HEAD
   voteApprove(name, id) {
+=======
+  updateMessage(e) {
+    this.setState({
+      message: e.target.value,
+    });
+  }
+
+  voteApprove(name, id, uname) {
+>>>>>>> 0965f7daf3e4632b29c32485e5387a6ac582b2ff
     let resName = name || this.state.currentSelection.name;
     let resId = id || this.state.currentSelection.id;
     let voteObj = {
@@ -220,6 +309,7 @@ class Room extends React.Component {
       restaurant_id: resId,
       name: resName,
       roomID: this.roomID,
+      nominator: uname
     };
     $.post('/api/votes', voteObj).then(() => {
       this.socket.emit('vote', voteObj);
@@ -230,25 +320,27 @@ class Room extends React.Component {
   }
 
   voteVeto() {
-    let resId = this.state.currentSelection.id;
-    this.setState({
-      isNominating: true,
-    });
-    if (this.state.currentSelection) {
-      let voteObj = {
-        voter: this.props.username,
-        restaurant_id: resId,
-        name: this.state.currentSelection.name,
-        roomID: this.roomID,
-      };
-      console.log('INSIDE', voteObj)
-      $.post('/api/vetoes', voteObj).then(() => {
-        this.setState({
-          currentSelection: undefined,
-          hasVoted: true,
-        });
-        this.socket.emit('veto', voteObj);
+    if (!this.state.nominateTimer) {
+      let resId = this.state.currentSelection.id;
+      this.setState({
+        isNominating: true,
       });
+      if (this.state.currentSelection) {
+        let voteObj = {
+          voter: this.props.username,
+          restaurant_id: resId,
+          name: this.state.currentSelection.name,
+          roomID: this.roomID,
+        };
+        console.log('INSIDE', voteObj)
+        $.post('/api/vetoes', voteObj).then(() => {
+          this.setState({
+            currentSelection: undefined,
+            hasVoted: true,
+          });
+          this.socket.emit('veto', voteObj);
+        });
+      }
     }
   }
 
@@ -257,7 +349,7 @@ class Room extends React.Component {
     const { width, height } = this.props.size
 
     let restaurantList = this.state.zipcode ? (
-      <RestaurantList zipcode={this.state.zipcode} nominate={this.nominateRestaurant} currentName={this.currentSelectionName}/>
+      <RestaurantList vetoedRestaurants={this.state.vetoedRestaurants} zipcode={this.state.zipcode} nominate={this.nominateRestaurant} currentName={this.currentSelectionName}/>
     ) : (
         ''
       );
@@ -297,7 +389,21 @@ class Room extends React.Component {
                 <article className="tile is-child notification">
                   <div id="yelp-list">
                     {this.state.winner.id ? 
-                    <div>Winner</div> :
+                    <div>
+                      <div className="title has-text-centered">
+                        Your Winner:
+                        <p><a href={this.state.winner.url} target="_blank">{this.state.winner.name}</a></p>
+                      </div>
+                      <div className="media-content">
+                        <p className="image is-square">
+                          <img src={this.state.winner.image_url} className="restaurant-img hidden" />
+                        </p>
+                        <p className="title is-3 is-marginless">Address:</p>
+                        {this.state.winner.location.display_address.map((line) => {
+                          return <p className="subtitle is-5 is-marginless">{line}</p>
+                        })}
+                      </div>
+                    </div> :
                     restaurantList}
                   </div>
                 </article>
@@ -309,6 +415,8 @@ class Room extends React.Component {
                   <article className="tile is-child notification">
                   <div id="current-restaurant">
                     <p className="title">Time Remaining: {this.state.timer}</p>
+                    {this.state.nominateTimer ? 
+                    <p className="title">Time Until Veto: {this.state.nominateTimer}</p> : <div><br></br><br></br></div>}
                     <p className="title">Current Selection</p>
                     {currentSelection}
                     <button onClick={() => this.voteApprove()} className="button is-success">

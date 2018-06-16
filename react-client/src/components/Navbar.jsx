@@ -10,11 +10,23 @@ class Navbar extends React.Component {
   }
 
   render() {
+    let badge = '';
+    if (this.props.wins >= 20) {
+      badge = '/assets/king.png'
+    } else if (this.props.wins >= 15) {
+      badge = '/assets/gold.png'
+    } else if (this.props.wins >= 10) {
+      badge = '/assets/silver.png'
+    } else if (this.props.wins >= 5) {
+      badge = '/assets/bronze.png'
+    }
+
     let authentication = this.props.loggedIn ? (
       [<UserMenu
         logout={this.props.logout}
         username={this.props.username} />,
-      <div className="navbar-item">Wins: {this.props.wins}</div>]
+      <div className="navbar-item">Wins: {this.props.wins}</div>,
+      <img src={badge}></img>]
     ) : (
         [<div className="control" key="1">
           <LoginDialog

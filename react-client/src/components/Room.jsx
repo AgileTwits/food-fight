@@ -6,6 +6,7 @@ import RestaurantList from './RestaurantList.jsx';
 import CurrentSelection from './CurrentSelection.jsx';
 import sizeMe from 'react-sizeme';
 import Confetti from 'react-confetti';
+import LiveChat from './LiveChat.jsx';
 
 class Room extends React.Component {
   constructor(props) {
@@ -261,12 +262,12 @@ class Room extends React.Component {
     setTimeout(() => console.log('NOMINATE SEL',this.state.currentSelection), 2000)
   }
 
-  sendMessage() {
+  sendMessage(msg) {
     console.log('NOMINATE TIMER', this.state.nominateTimer);
     let messageObj = {
       message: {
         name: this.props.username || this.state.name,
-        message: this.state.message,
+        message: msg,
       },
       roomID: this.roomID,
     };
@@ -279,12 +280,6 @@ class Room extends React.Component {
   updateName(e) {
     this.setState({
       name: e.target.value,
-    });
-  }
-
-  updateMessage(e) {
-    this.setState({
-      message: e.target.value,
     });
   }
 
@@ -439,40 +434,13 @@ class Room extends React.Component {
                   </div>
                 </article>}
                 <article className="tile is-child notification">
-                  <div id="chat">
-                    <h4 className="is-size-4">Live Chat</h4>
-                    <div>
-                      Name{' '}
-                      <input
-                        type="text"
-                        className="input"
-                        value={this.state.name}
-                        onChange={this.updateName.bind(this)}
-                      />
-                    </div>
-                    <span>
-                      Message{' '}
-                      <input
-                        type="text"
-                        className="input"
-                        value={this.state.message}
-                        onChange={this.updateMessage.bind(this)}
-                      />
-                    </span>
-                    <button
-                      onClick={this.sendMessage.bind(this)}
-                      className="button is-outlined is-primary is-medium send-message"
-                    >
-                      Send
-            </button>
-                    <div className="chat-messages">
-                      {this.state.messages.map(message => (
-                        <p>
-                          <strong>{message.name}:</strong> {message.message}
-                        </p>
-                      ))}
-                    </div>
-                  </div>
+                  <LiveChat 
+                    roomName={this.state.roomName}
+                    messages={this.state.messages}
+                    username={this.props.username}
+                    message={this.state.message}
+                    sendMessage={this.sendMessage}
+                  />
                 </article>
               </div>
             </div>

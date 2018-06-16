@@ -40,6 +40,7 @@ class App extends React.Component {
             loginError: false,
           });
           this.getUserRooms(res.data.user.email);
+          this.getUserWins(res.data.user.email);
         }
       });
   }

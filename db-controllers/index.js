@@ -342,12 +342,12 @@ const addWin = (rest, room) => {
     .findOne({
       where: {
         roomuniqueid: room,
-        restaurant_id: rest
+        restaurant_id: rest,
+        nominator: {[sequelize.Op.ne]: 'undefined'}
       },
       attributes: ['nominator']
     })
     .then((res) => {
-      console.log('ADDING WIN FOR: ', res.dataValues.nominator);
       let nom = res.dataValues.nominator;
       db.models.User
         .increment(

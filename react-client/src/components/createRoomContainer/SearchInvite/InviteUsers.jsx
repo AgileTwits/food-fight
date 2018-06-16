@@ -43,6 +43,12 @@ class InviteUsers extends React.Component {
     });
   }
 
+  handleKeyPress(event) {
+    if (event.key == 'Enter') {
+      this.sendInvite.call(this, this.state.input);
+    }
+  }
+
   render() {
     // Validate email entry
     const checkEmailValid = () => {
@@ -74,6 +80,7 @@ class InviteUsers extends React.Component {
               type="email"
               value={this.state.input}
               onChange={this.updateInput.bind(this)}
+              onKeyPress={this.handleKeyPress.bind(this)}
               {...checkEmailValid()}
               placeholder="Email" />
           </div>

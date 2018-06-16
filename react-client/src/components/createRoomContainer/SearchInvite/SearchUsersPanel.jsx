@@ -10,12 +10,19 @@ class SearchUsersPanel extends React.Component {
     }
 
     this.enterQuery = this.enterQuery.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
   }
 
   enterQuery(e) {
     this.setState({
       query: e.target.value,
     });
+  }
+
+  handleKeyPress(event) {
+    if (event.key == 'Enter') {
+      this.props.searchUsers.call(this, this.state.query);
+    }
   }
 
   render() {
@@ -43,7 +50,8 @@ class SearchUsersPanel extends React.Component {
                     className="input"
                     placeholder="Email"
                     value={this.state.query}
-                    onChange={this.enterQuery} />
+                    onChange={this.enterQuery}
+                    onKeyPress={this.handleKeyPress} />
                 </div>
                 <div className="control">
                   <a

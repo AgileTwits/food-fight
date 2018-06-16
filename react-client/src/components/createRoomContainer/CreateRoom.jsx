@@ -18,6 +18,8 @@ class CreateRoom extends React.Component {
 
       roomLink: ''
     };
+    this.handleKeyPress = this.handleKeyPress.bind(this);
+    this.createRoom = this.createRoom.bind(this);
   }
 
   createRoom() {
@@ -95,6 +97,12 @@ class CreateRoom extends React.Component {
     }
   }
 
+  handleKeyPress(event) {
+    if (event.key == 'Enter') {
+      this.createRoom();
+    }
+  }
+
   render() {
     var uniqueURL = this.state.roomID ?
       `https://food-fight-greenfield.herokuapp.com/rooms/${this.state.roomID}`
@@ -153,7 +161,8 @@ class CreateRoom extends React.Component {
                     type="text"
                     placeholder="Arena name..."
                     value={this.state.roomName}
-                    onChange={this.updateRoomName.bind(this)} />
+                    onChange={this.updateRoomName.bind(this)}
+                    onKeyPress={this.handleKeyPress} />
                 </p>
               </div>
             </div>
@@ -167,6 +176,7 @@ class CreateRoom extends React.Component {
                     title="Five digit zip code"
                     value={this.state.zipCode}
                     onChange={this.updateZip.bind(this)}
+                    onKeyPress={this.handleKeyPress}
                     {...isZipValid1()}
                     placeholder="Zip Code"
                   />
@@ -187,7 +197,7 @@ class CreateRoom extends React.Component {
             <div className="is-divider" />
             <button
               id="fight-button"
-              onClick={this.createRoom.bind(this)}
+              onClick={this.createRoom}
               className="button is-primary is-large is-fullwidth">
               Fight!
               </button>

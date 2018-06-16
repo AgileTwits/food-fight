@@ -92,6 +92,12 @@ class SubscribeDialog extends React.Component {
     }
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.open === false && this.state.open === true) {
+      document.getElementById('subscribeEmail').focus();
+    }
+  }
+
 
   //
   // ─── RENDER ─────────────────────────────────────────────────────────────────────
@@ -161,6 +167,7 @@ class SubscribeDialog extends React.Component {
                   <input
                     {...isEmailValid1}
                     type="email"
+                    id="subscribeEmail"
                     placeholder="johndoe@gmail.com"
                     value={this.state.email}
                     onChange={this.enterEmail}

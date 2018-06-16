@@ -56,6 +56,11 @@ class LoginDialog extends React.Component {
     }
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if(prevState.open === false && this.state.open === true) {
+      document.getElementById('loginEmail').focus();
+    }
+  }
 
   //
   // ─── RENDER ─────────────────────────────────────────────────────────────────────
@@ -111,6 +116,7 @@ class LoginDialog extends React.Component {
                 <p className="control has-icons-left">
                   <input
                     className="input"
+                    id='loginEmail'
                     type="email"
                     placeholder="johndoe@gmail.com"
                     value={this.state.email}

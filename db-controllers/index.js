@@ -312,23 +312,25 @@ const getScoreboard = (roomID, callback) => {
     });
 
   const sqlQuery = `SELECT CASE WHEN votes.restaurant_id IS NOT NULL 
-  THEN votes.restaurant_id ELSE vetoes.restaurant_id END,
-  CASE WHEN votes.name IS NOT NULL
-  THEN votes.name ELSE vetoes.name END,
-  CAST(votes.votes AS int), 
-  CASE WHEN vetoes.vetoes > 0 
-  THEN true ELSE false END as vetoed 
-    FROM (
-      (SELECT restaurant_id, name, count(upvoted) as votes 
-      FROM votes WHERE roomuniqueid = '${roomID}' AND upvoted = true 
-      GROUP BY restaurant_id, roomuniqueid, name) votes 
-      FULL JOIN 
-          (SELECT restaurant_id, name, count(upvoted) as vetoes 
-          FROM votes 
-          WHERE roomuniqueid = '${roomID}' 
-          AND upvoted = false 
-          GROUP BY restaurant_id, roomuniqueid, name) vetoes 
-      ON votes.restaurant_id = vetoes.restaurant_id);`;
+    THEN votes.restaurant_id ELSE vetoes.restaurant_id END,
+    CASE WHEN votes.name IS NOT NULL
+    THEN votes.name ELSE vetoes.name END,
+    CASE WHEN votes.votes IS NOT NULL 
+    THEN CAST(votes.votes AS int) 
+    ELSE CAST(0 AS int) END AS votes, 
+    CASE WHEN vetoes.vetoes > 0 
+    THEN true ELSE false END AS vetoed 
+      FROM (
+        (SELECT restaurant_id, name, count(upvoted) AS votes 
+        FROM votes WHERE roomuniqueid = '${roomID}' AND upvoted = true 
+        GROUP BY restaurant_id, roomuniqueid, name) votes 
+        FULL JOIN 
+            (SELECT restaurant_id, name, count(upvoted) AS vetoes 
+            FROM votes 
+            WHERE roomuniqueid = '${roomID}' 
+            AND upvoted = false 
+            GROUP BY restaurant_id, roomuniqueid, name) vetoes 
+        ON votes.restaurant_id = vetoes.restaurant_id);`;
   db.sequelize.query(sqlQuery).spread((results) => {
     console.log('GET VOTES', results);
     callback(null, results);

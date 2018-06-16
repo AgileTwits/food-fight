@@ -15,6 +15,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER(6),
       allowNull: false,
     },
+    wins: {
+      type: DataTypes.INTEGER(6),
+      defaultValue: 0,
+      allowNull: true,
+    },
   });
 
   User.associate = (models) => {

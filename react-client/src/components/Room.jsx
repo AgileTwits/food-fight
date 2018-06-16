@@ -323,6 +323,23 @@ class Room extends React.Component {
           this.socket.emit('veto', voteObj);
         });
       }
+    } else {
+      let resId = this.state.currentSelection.id;
+      if (this.state.currentSelection) {
+        let voteObj = {
+          voter: this.props.username,
+          restaurant_id: resId,
+          name: this.state.currentSelection.name,
+          roomID: this.roomID,
+      };
+      console.log('INSIDE', voteObj)
+      $.post('/api/vetoes', voteObj).then(() => {
+        this.setState({
+          hasVoted: true,
+        });
+        this.socket.emit('veto', voteObj);
+      });
+    }
     }
   }
 

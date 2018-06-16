@@ -172,7 +172,7 @@ app.post('/api/save', (req, res) => {
     countdown: true,
     complete: () => {
       console.log('TIMER OVER');
-      dbHelpers.saveWinner(roomUnique)
+      dbHelpers.saveWinner(roomUnique);
     }
   });
   timerObj[roomUnique].start(60000);
@@ -354,8 +354,8 @@ app.post('/api/currentrestaurant', (req, res) => {
 });
 
 app.post('/api/votes', (req, res) => {
-  const { name, roomID, voter, restaurant_id } = req.body;
-  dbHelpers.updateVotes(voter, restaurant_id, name, roomID, (err, restaurant) => {
+  const { name, roomID, voter, restaurant_id, nominator } = req.body;
+  dbHelpers.updateVotes(voter, restaurant_id, name, roomID, nominator, (err, restaurant) => {
     if (err) {
       console.log('Error upvoting restaurant', err);
     } else {

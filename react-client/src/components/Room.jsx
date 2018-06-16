@@ -360,9 +360,9 @@ class Room extends React.Component {
                     <div className="chat-messages">
                       {this.state.messages.map(message => {
                         if(this.props.username === message.name) {
-                          return (<div style={{textAlign:"right", backgroundColor:"#ffe6e6", borderTop:"1px solid black", padding:"5px"}}>{message.message}</div>)
+                          return (<div style={{textAlign:"right", backgroundColor:"#ffe6e6", borderTop:"1px solid black", padding:"5px"}}><p>{message.message}</p></div>)
                         } else {
-                          return (<div style={{textAlign:"left", backgroundColor:"#f0f5f5", borderTop:"1px solid black", padding:"5px"}}><strong>{message.name}:</strong> {message.message}</div>)
+                          return (<div style={{textAlign:"left", backgroundColor:"#f0f5f5", borderTop:"1px solid black", padding:"5px"}}><p><strong>{message.name}:</strong> {message.message}</p></div>)
                         }
                       })}
                     </div>

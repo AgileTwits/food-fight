@@ -2,6 +2,7 @@ import React from 'react';
 import LoginDialog from './AuthUserMenu/LoginDialog.jsx';
 import SubscribeDialog from './AuthUserMenu/SubscribeDialog.jsx';
 import UserMenu from './AuthUserMenu/UserMenu.jsx';
+import { Link } from 'react-router-dom';
 
 class Navbar extends React.Component {
   constructor(props) {

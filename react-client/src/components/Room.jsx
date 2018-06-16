@@ -256,7 +256,7 @@ class Room extends React.Component {
       }
       // A user who nominates a restaurant should automatically vote for it
       // Socket is not refreshing table for some reason but still sends vote
-      this.voteApprove(restaurant.name, restaurant.id);
+      this.voteApprove(restaurant.name, restaurant.id, this.props.username);
     }
     setTimeout(() => console.log('NOMINATE SEL',this.state.currentSelection), 2000)
   }
@@ -288,7 +288,7 @@ class Room extends React.Component {
     });
   }
 
-  voteApprove(name, id) {
+  voteApprove(name, id, uname) {
     let resName = name || this.state.currentSelection.name;
     let resId = id || this.state.currentSelection.id;
     let voteObj = {
@@ -296,6 +296,7 @@ class Room extends React.Component {
       restaurant_id: resId,
       name: resName,
       roomID: this.roomID,
+      nominator: uname
     };
     $.post('/api/votes', voteObj).then(() => {
       this.socket.emit('vote', voteObj);

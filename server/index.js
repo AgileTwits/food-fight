@@ -175,7 +175,7 @@ app.post('/api/save', (req, res) => {
       dbHelpers.saveWinner(roomUnique);
     }
   });
-  timerObj[roomUnique].start(60000);
+  timerObj[roomUnique].start(180000);
 
   dbHelpers.saveRoomAndMembers(roomName, zip, members, roomUnique, (err, room, users) => {
     if (err) {

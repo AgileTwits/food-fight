@@ -4,8 +4,8 @@ import $ from 'jquery';
 import Tock from 'tocktimer';
 import RestaurantList from './RestaurantList.jsx';
 import CurrentSelection from './CurrentSelection.jsx';
-import sizeMe from 'react-sizeme'
-import Confetti from 'react-confetti'
+import sizeMe from 'react-sizeme';
+import Confetti from 'react-confetti';
 
 class Room extends React.Component {
   constructor(props) {
@@ -26,14 +26,13 @@ class Room extends React.Component {
       // The hasVoted functionality has not yet been implemented
       hasVoted: false,
     };
-    //remove
-    console.log('JOSEPH', process.env.PORT);
     this.roomID = this.props.match.params.roomID;
 
     this.nominateRestaurant = this.nominateRestaurant.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
     this.voteApprove = this.voteApprove.bind(this);
     this.voteVeto = this.voteVeto.bind(this);
+    this.retrieveCurrentRestaurant = this.retrieveCurrentRestaurant.bind(this);
 
     // Client-side socket events
     // NEED THIS TO WORK ON DEPLOYMENT
@@ -85,12 +84,33 @@ class Room extends React.Component {
 
   /// Send post request to server to fetch room info when user visits link
   componentDidMount() {
+    this.retrieveCurrentRestaurant();
     this.getMessages();
     this.getRoomInfo();
     this.getTimer();
     this.getVotes();
     this.socket.emit('join', this.roomID);
     this.getWinner();
+  }
+
+  retrieveCurrentRestaurant() {
+    let roomIDObj = {
+      roomID: this.roomID
+    }
+    $.post('/api/currentrestaurant', roomIDObj).then((restaurant) => {
+      $.post('/api/search/restaurant', {
+        restId: restaurant[0].currentrestaurant
+      }).then((current) => {
+        console.log('Mounting Restaurant', current);
+        if ('error' in current === false) {
+          console.log('has error');
+          this.setState({
+            currentSelection: current,
+            isNominating: false,
+          });
+        }
+      });
+    });
   }
 
   getMessages() {
@@ -169,6 +189,7 @@ class Room extends React.Component {
 
   // Activated on click of RestaurantListItem component
   nominateRestaurant(restaurant, reloading = false) {
+    console.log('hey joseph nominate', restaurant)
     if (this.state.isNominating) {
       this.setState({
         currentSelection: restaurant,
@@ -193,6 +214,7 @@ class Room extends React.Component {
       // Socket is not refreshing table for some reason but still sends vote
       this.voteApprove(restaurant.name, restaurant.id);
     }
+    setTimeout(() => console.log('NOMINATE SEL',this.state.currentSelection), 2000)
   }
 
   sendMessage() {

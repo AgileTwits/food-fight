@@ -145,7 +145,9 @@ const getRooms = (email, callback) => {
     FULL JOIN rooms 
     ON room_users.room_id = rooms.id  
     WHERE room_users.user_id = 
-    (SELECT ID FROM users WHERE email = '${email}');`
+    (SELECT ID FROM users WHERE email = '${email}')
+    ORDER BY rooms."createdAt" desc
+    LIMIT 20;`
     db.sequelize.query(sqlQuery).spread((results) => {
       console.log('ROOOOOOOOOOOOMS', results);
       callback(null, results)
@@ -186,6 +188,14 @@ const saveCurrentRestaurant = (roomID, restaurantID, callback) => {
   const sqlQuery = `UPDATE rooms SET currentrestaurant = '${restaurantID}' WHERE uniqueid = '${roomID}';`;
   db.sequelize.query(sqlQuery).spread((results) => {
     console.log('AAAAAAAAAAAAAAA', results[0]);
+  });
+};
+
+const getCurrentRestaurant = (roomID, callback) => {
+  const sqlQuery = `SELECT currentrestaurant FROM rooms WHERE uniqueid = '${roomID}'`
+  db.sequelize.query(sqlQuery).spread((results) => {
+    console.log('GET VOTES', results);
+    callback(null, results);
   });
 };
 
@@ -349,6 +359,7 @@ module.exports = {
   getRoomMembers,
   saveRestaurant,
   saveCurrentRestaurant,
+  getCurrentRestaurant,
   updateVotes,
   updateVetoes,
   getScoreboard,

@@ -28,7 +28,7 @@ class LiveChat extends React.Component {
 
     handleKeyPress(event) {
         if (event.key == 'Enter') {
-          this.props.sendMessage(this.state.msg);
+          if(this.state.msg) this.props.sendMessage(this.state.msg);
           this.setState({
             msg: ''
           })
@@ -36,7 +36,7 @@ class LiveChat extends React.Component {
     }
 
     handleClick() {
-        this.props.sendMessage(this.state.msg);
+      if (this.state.msg) this.props.sendMessage(this.state.msg);
         this.setState({
             msg: ''
         })

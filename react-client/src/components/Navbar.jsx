@@ -11,9 +11,10 @@ class Navbar extends React.Component {
 
   render() {
     let authentication = this.props.loggedIn ? (
-      <UserMenu
+      [<UserMenu
         logout={this.props.logout}
-        username={this.props.username} />
+        username={this.props.username} />,
+      <div className="navbar-item">Wins: {this.props.wins}</div>]
     ) : (
         [<div className="control" key="1">
           <LoginDialog

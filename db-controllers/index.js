@@ -154,6 +154,17 @@ const getRooms = (email, callback) => {
     })
 };
 
+const getWins = (email, callback) => {
+  db.models.User
+    .findOne({
+      where: {email: email},
+      attributes: ['wins']
+    })
+    .then((res) =>{
+      callback(null, `${res.dataValues.wins}`)
+    })
+}
+
 //
 // ─── RESTAURANT TABLE HELPERS ─────────────────────────────────────────────────────────
 //
@@ -404,5 +415,6 @@ module.exports = {
   getMessages,
   getRooms,
   saveWinner,
-  getWinner
+  getWinner,
+  getWins
 };

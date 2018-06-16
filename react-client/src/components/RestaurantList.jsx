@@ -44,11 +44,15 @@ class RestaurantList extends React.Component {
   }
 
   render() {
-    // console.log('Render restaurant list called')
+    // console.log('RESTAURANT LIST REJECTS', this.props.vetoedRestaurants)
     return (
       <div>
         <p className="title">Local Restaurants</p>
-        {this.state.restaurants.map(restaurant => {
+        {this.state.restaurants
+        .filter(restaurant => {
+          return !this.props.vetoedRestaurants.includes(restaurant.id);
+        })
+        .map(restaurant => {
           return <RestaurantListItem restaurant={restaurant} nominate={this.props.nominate} key={restaurant.id}/>;
         })}
       </div>

@@ -20,6 +20,7 @@ class Room extends React.Component {
       currentSelectionName: undefined,
       isNominating: true,
       votes: [],
+      vetoedRestaurants: [],
       roomName: '',
       timer: '',
       nominateTimer: undefined,
@@ -204,9 +205,20 @@ class Room extends React.Component {
 
   getVotes() {
     $.get(`/api/votes/${this.roomID}`).then(restaurants => {
+      let vetoedRests = this.state.vetoedRestaurants;
+      for (let restaurant of restaurants) {
+        console.log('THIS IS VETOED', restaurant)
+        if (restaurant.vetoed === true) {
+          vetoedRests.push(restaurant.restaurant_id);
+        }
+      }
+      console.log('hey vetoed!!', vetoedRests)
+
       this.setState({
         votes: restaurants,
+        vetoedRestaurants: vetoedRests,
       });
+
       if (restaurants.length && !this.state.currentSelection) {
         restaurants.forEach(restaurant => {
           if (!restaurant.vetoed) {
@@ -323,7 +335,7 @@ class Room extends React.Component {
     const { width, height } = this.props.size
 
     let restaurantList = this.state.zipcode ? (
-      <RestaurantList zipcode={this.state.zipcode} nominate={this.nominateRestaurant} currentName={this.currentSelectionName}/>
+      <RestaurantList vetoedRestaurants={this.state.vetoedRestaurants} zipcode={this.state.zipcode} nominate={this.nominateRestaurant} currentName={this.currentSelectionName}/>
     ) : (
         ''
       );

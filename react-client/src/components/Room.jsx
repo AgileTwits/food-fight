@@ -68,6 +68,7 @@ class Room extends React.Component {
         this.setState({
           currentSelection: nominee.restaurant,
           hasVoted: false,
+          isNominating: false,
         });
       }
     });
@@ -103,6 +104,7 @@ class Room extends React.Component {
       }).then((current) => {
         console.log('Mounting Restaurant', current);
         if ('error' in current === false) {
+          console.log('has error');
           this.setState({
             currentSelection: current,
             isNominating: false,
@@ -292,7 +294,7 @@ class Room extends React.Component {
     ) : (
         ''
       );
-    let currentSelection = (this.state.currentSelection) ? (
+    let currentSelection = (this.state.currentSelection && !this.state.isNominating) ? (
       <CurrentSelection restaurant={this.state.currentSelection} />
     ) : (
         <div>Please nominate a restaurant</div>

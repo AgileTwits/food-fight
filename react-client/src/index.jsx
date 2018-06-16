@@ -25,6 +25,7 @@ class App extends React.Component {
 
       searchedUsers: [],
       userRooms: [],
+      userWins: ''
     };
   }
 
@@ -80,6 +81,15 @@ class App extends React.Component {
     })
   }
 
+  getUserWins(email) {
+    axios.post('/api/userwins', {username: email})
+    .then(res => {
+      this.setState({
+        userWins: res.data
+      })
+    })
+  }
+
   //
   // ─── USER AUTH ──────────────────────────────────────────────────────────────────
   //
@@ -116,6 +126,7 @@ class App extends React.Component {
         if (res.config.data) {
           console.log('Logged in as:', JSON.parse(res.config.data).email);
           this.getUserRooms(JSON.parse(res.config.data).email);
+          this.getUserWins(JSON.parse(res.config.data).email);
           this.setState({
             loggedIn: true,
             loggedInUsername: JSON.parse(res.config.data).email
@@ -161,7 +172,8 @@ class App extends React.Component {
               loggedIn={this.state.loggedIn}
               username={this.state.loggedInUsername}
               error={this.state.loginError}
-              subscribeError={this.state.subscribeError} />
+              subscribeError={this.state.subscribeError}
+              wins={this.state.userWins} />
           </div >
           <Route exact path="/" render={
             (props) => <MainView

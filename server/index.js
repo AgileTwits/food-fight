@@ -172,7 +172,7 @@ app.post('/api/save', (req, res) => {
     countdown: true,
     complete: () => {
       console.log('TIMER OVER');
-      dbHelpers.saveWinner(roomUnique)
+      dbHelpers.saveWinner(roomUnique);
     }
   });
   timerObj[roomUnique].start(60000);

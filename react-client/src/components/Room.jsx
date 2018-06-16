@@ -18,7 +18,7 @@ class Room extends React.Component {
       zipcode: undefined,
       currentSelection: undefined,
       currentSelectionName: undefined,
-      isNominating: false,
+      isNominating: true,
       votes: [],
       roomName: '',
       timer: '',

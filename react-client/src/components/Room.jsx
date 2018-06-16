@@ -71,6 +71,7 @@ class Room extends React.Component {
           isNominating: false,
         });
       }
+      this.getVotes();
     });
 
     this.socket.on('join', roomID => {

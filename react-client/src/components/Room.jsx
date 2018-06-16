@@ -22,6 +22,7 @@ class Room extends React.Component {
       votes: [],
       roomName: '',
       timer: '',
+      nominateTimer: undefined,
       winner: {},
       // The hasVoted functionality has not yet been implemented
       hasVoted: false,
@@ -71,6 +72,7 @@ class Room extends React.Component {
           isNominating: false,
         });
       }
+      this.getNominateTimer();
       this.getVotes();
     });
 
@@ -90,6 +92,7 @@ class Room extends React.Component {
     this.getMessages();
     this.getRoomInfo();
     this.getTimer();
+    this.getNominateTimer();
     this.getVotes();
     this.socket.emit('join', this.roomID);
     this.getWinner();
@@ -167,6 +170,33 @@ class Room extends React.Component {
           this.getWinner();
         }
       });
+      // console.log('STARTING TIMER');
+      tock.start(timer.timeLeft + 1000);
+    });
+  }
+
+  getNominateTimer() {
+    $.get(`/api/nominatetimer/${this.roomID}`).then(timer => {
+      let tock = new Tock({
+        countdown: true,
+        interval: 100,
+        callback: () => {
+          let time = tock.lap()
+          let seconds = (Math.floor((time / 1000) % 60));
+          let minutes = (Math.floor((time / (60000)) % 60));
+          seconds = (seconds < 10) ? "0" + seconds : seconds;
+          minutes = (minutes < 10) ? "0" + minutes : minutes;
+
+          this.setState({
+            nominateTimer: minutes + ':' + seconds
+          })
+        },
+        complete: () => {
+          this.setState({
+            nominateTimer: undefined,
+          })
+        }
+      });
       console.log('STARTING TIMER');
       tock.start(timer.timeLeft + 1000);
     });
@@ -220,7 +250,7 @@ class Room extends React.Component {
   }
 
   sendMessage() {
-    console.log(this.props.username)
+    console.log('NOMINATE TIMER', this.state.nominateTimer);
     let messageObj = {
       message: {
         name: this.props.username || this.state.name,
@@ -264,25 +294,27 @@ class Room extends React.Component {
   }
 
   voteVeto() {
-    let resId = this.state.currentSelection.id;
-    this.setState({
-      isNominating: true,
-    });
-    if (this.state.currentSelection) {
-      let voteObj = {
-        voter: this.props.username,
-        restaurant_id: resId,
-        name: this.state.currentSelection.name,
-        roomID: this.roomID,
-      };
-      console.log('INSIDE', voteObj)
-      $.post('/api/vetoes', voteObj).then(() => {
-        this.setState({
-          currentSelection: undefined,
-          hasVoted: true,
-        });
-        this.socket.emit('veto', voteObj);
+    if (!this.state.nominateTimer) {
+      let resId = this.state.currentSelection.id;
+      this.setState({
+        isNominating: true,
       });
+      if (this.state.currentSelection) {
+        let voteObj = {
+          voter: this.props.username,
+          restaurant_id: resId,
+          name: this.state.currentSelection.name,
+          roomID: this.roomID,
+        };
+        console.log('INSIDE', voteObj)
+        $.post('/api/vetoes', voteObj).then(() => {
+          this.setState({
+            currentSelection: undefined,
+            hasVoted: true,
+          });
+          this.socket.emit('veto', voteObj);
+        });
+      }
     }
   }
 

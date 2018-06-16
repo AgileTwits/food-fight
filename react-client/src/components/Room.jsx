@@ -293,7 +293,7 @@ class Room extends React.Component {
     ) : (
         ''
       );
-    let currentSelection = (this.state.currentSelection && !this.state.isNominating) ? (
+    let currentSelection = (this.state.currentSelection) ? (
       <CurrentSelection restaurant={this.state.currentSelection} />
     ) : (
         <div>Please nominate a restaurant</div>

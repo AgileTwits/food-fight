@@ -34,6 +34,7 @@ class Room extends React.Component {
     this.sendMessage = this.sendMessage.bind(this);
     this.voteApprove = this.voteApprove.bind(this);
     this.voteVeto = this.voteVeto.bind(this);
+    this.updateMessage = this.updateMessage.bind(this);
 
     // Client-side socket events
     // NEED THIS TO WORK ON DEPLOYMENT
@@ -90,15 +91,6 @@ class Room extends React.Component {
     this.getTimer();
     this.getVotes();
     this.socket.emit('join', this.roomID);
-    this.scrollToBottom();
-  }
-
-  componentDidUpdate() {
-    this.scrollToBottom();
-  }
-
-  scrollToBottom () {
-    this.messagesEnd.scrollIntoView({ behavior: "smooth" });
   }
 
   getMessages() {
@@ -211,12 +203,6 @@ class Room extends React.Component {
     $.post('/api/messages', messageObj).then(() => {
       this.socket.emit('chat', messageObj);
     });
-  }
-
-  handleKeyPress(event) {
-    if (event.key == 'Enter') {
-      this.sendMessage();
-    }
   }
 
   // Update from text boxes in the live chat
@@ -364,40 +350,14 @@ class Room extends React.Component {
                   </div>
                 </article>}
                 <article className="tile is-child notification">
-                  <div id="chat">
-                    <h4 className="is-size-4">{this.state.roomName} Chatroom</h4>
-                    <div className="chat-messages">
-                      {this.state.messages.map(message => {
-                        if(this.props.username === message.name) {
-                          return (<div style={{textAlign:"right", backgroundColor:"#ffe6e6", borderTop:"1px solid black", padding:"5px"}}><p>{message.message}</p></div>)
-                        } else {
-                          return (<div style={{textAlign:"left", backgroundColor:"#f0f5f5", borderTop:"1px solid black", padding:"5px"}}><p><strong>{message.name}:</strong> {message.message}</p></div>)
-                        }
-                      })}
-                    </div>
-                    <div style={{ float:"left", clear: "both" }}
-                      ref={(el) => { this.messagesEnd = el; }}>
-                    </div>
-                    <div>
-                      <span>
-                            <input
-                              type="text"
-                              className="input is-primary is-small is-rounded"
-                              value={this.state.message}
-                              onChange={this.updateMessage.bind(this)}
-                              onKeyPress={this.handleKeyPress.bind(this)}
-                              style={{width:'450px', marginTop:'15px', marginRight:'15px'}}
-                            />
-                      </span>
-                      <button
-                        onClick={this.sendMessage.bind(this)}
-                        className="button is-outlined is-primary is-small send-message"
-                        style={{marginTop:'15px'}}
-                      >
-                        Send
-                      </button>
-                    </div>
-                  </div>
+                  <LiveChat 
+                    roomName={this.state.roomName}
+                    messages={this.state.messages}
+                    username={this.props.username}
+                    message={this.state.message}
+                    updateMessage={this.updateMessage}
+                    sendMessage={this.sendMessage}
+                  />
                 </article>
               </div>
             </div>

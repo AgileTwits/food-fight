@@ -6,10 +6,7 @@ import RestaurantList from './RestaurantList.jsx';
 import CurrentSelection from './CurrentSelection.jsx';
 import sizeMe from 'react-sizeme';
 import Confetti from 'react-confetti';
-<<<<<<< HEAD
 import LiveChat from './LiveChat.jsx';
-=======
->>>>>>> 0965f7daf3e4632b29c32485e5387a6ac582b2ff
 
 class Room extends React.Component {
   constructor(props) {
@@ -265,13 +262,8 @@ class Room extends React.Component {
     setTimeout(() => console.log('NOMINATE SEL',this.state.currentSelection), 2000)
   }
 
-<<<<<<< HEAD
   sendMessage(msg) {
-    console.log(this.props.username)
-=======
-  sendMessage() {
     console.log('NOMINATE TIMER', this.state.nominateTimer);
->>>>>>> 0965f7daf3e4632b29c32485e5387a6ac582b2ff
     let messageObj = {
       message: {
         name: this.props.username || this.state.name,
@@ -291,17 +283,7 @@ class Room extends React.Component {
     });
   }
 
-<<<<<<< HEAD
-  voteApprove(name, id) {
-=======
-  updateMessage(e) {
-    this.setState({
-      message: e.target.value,
-    });
-  }
-
   voteApprove(name, id, uname) {
->>>>>>> 0965f7daf3e4632b29c32485e5387a6ac582b2ff
     let resName = name || this.state.currentSelection.name;
     let resId = id || this.state.currentSelection.id;
     let voteObj = {

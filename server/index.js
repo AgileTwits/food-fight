@@ -327,6 +327,7 @@ app.post('/api/nominate', (req, res) => {
     countdown: true,
     complete: () => {
       console.log('TIMER OVER');
+      delete nominateTimerObj[roomID];
     }
   });
   nominateTimerObj[roomID].start(15000);

@@ -90,6 +90,15 @@ class Room extends React.Component {
     this.getTimer();
     this.getVotes();
     this.socket.emit('join', this.roomID);
+    this.scrollToBottom();
+  }
+
+  componentDidUpdate() {
+    this.scrollToBottom();
+  }
+
+  scrollToBottom () {
+    this.messagesEnd.scrollIntoView({ behavior: "smooth" });
   }
 
   getMessages() {
@@ -365,6 +374,9 @@ class Room extends React.Component {
                           return (<div style={{textAlign:"left", backgroundColor:"#f0f5f5", borderTop:"1px solid black", padding:"5px"}}><p><strong>{message.name}:</strong> {message.message}</p></div>)
                         }
                       })}
+                    </div>
+                    <div style={{ float:"left", clear: "both" }}
+                      ref={(el) => { this.messagesEnd = el; }}>
                     </div>
                     <div>
                       <span>

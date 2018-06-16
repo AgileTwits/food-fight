@@ -4,8 +4,9 @@ import $ from 'jquery';
 import Tock from 'tocktimer';
 import RestaurantList from './RestaurantList.jsx';
 import CurrentSelection from './CurrentSelection.jsx';
-import sizeMe from 'react-sizeme'
-import Confetti from 'react-confetti'
+import sizeMe from 'react-sizeme';
+import Confetti from 'react-confetti';
+import LiveChat from './LiveChat.jsx';
 
 class Room extends React.Component {
   constructor(props) {
@@ -34,7 +35,6 @@ class Room extends React.Component {
     this.sendMessage = this.sendMessage.bind(this);
     this.voteApprove = this.voteApprove.bind(this);
     this.voteVeto = this.voteVeto.bind(this);
-    this.updateMessage = this.updateMessage.bind(this);
 
     // Client-side socket events
     // NEED THIS TO WORK ON DEPLOYMENT
@@ -191,12 +191,12 @@ class Room extends React.Component {
     }
   }
 
-  sendMessage() {
+  sendMessage(msg) {
     console.log(this.props.username)
     let messageObj = {
       message: {
         name: this.props.username || this.state.name,
-        message: this.state.message,
+        message: msg,
       },
       roomID: this.roomID,
     };
@@ -209,12 +209,6 @@ class Room extends React.Component {
   updateName(e) {
     this.setState({
       name: e.target.value,
-    });
-  }
-
-  updateMessage(e) {
-    this.setState({
-      message: e.target.value,
     });
   }
 
@@ -355,7 +349,6 @@ class Room extends React.Component {
                     messages={this.state.messages}
                     username={this.props.username}
                     message={this.state.message}
-                    updateMessage={this.updateMessage}
                     sendMessage={this.sendMessage}
                   />
                 </article>

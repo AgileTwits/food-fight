@@ -364,7 +364,7 @@ const saveWinner = (roomId, callback) => {
   console.log('SAVING WINNER FOR: ', roomId);
   db.models.Vote
     .findAll({
-      where: {roomuniqueid: roomId},
+      where: {roomuniqueid: roomId, upvoted: true},
       attributes: ['restaurant_id', 'roomuniqueid',
         [sequelize.fn('count', sequelize.col('upvoted')), 'votes']],
       group: ['restaurant_id', 'roomuniqueid'],

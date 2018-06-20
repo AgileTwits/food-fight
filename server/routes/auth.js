@@ -22,10 +22,10 @@ router.use(passport.session());
 auth.passportHelper(passport);
 router.use(flash());
 
-// router.use((req, res, next) => {
-//   console.log(req.session);
-//   next();
-// });
+router.use((req, res, next) => {
+  console.log(req.session);
+  next();
+});
 
 
 //

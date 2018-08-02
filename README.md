@@ -48,7 +48,10 @@ DOMAIN=
 If you would like to contribute to the project, please submit a pull request and tag someone for review. We enforce 2018 Airbnb style guide.
 
 ## Authors
-
+- [**Matt Lee**](https://github.com/mattacus)
+- [**Joseph Oh**](https://github.com/ohyjoseph)
+- [**Michael Panetta**](https://github.com/panetters)
+- [**Trevor Sasaki**](https://github.com/Trevsaki)
 - [**Carter Robinson**](https://github.com/ctrobins)
 - [**Mitchell Stewart**](https://github.com/mitchstewart08)
 - [**Raphael Croce**](https://github.com/riffryder)
